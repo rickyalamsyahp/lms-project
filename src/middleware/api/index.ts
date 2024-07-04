@@ -3,6 +3,7 @@ import auth from '@/modules/auth/route'
 import * as user from '@/modules/user/route'
 import route from '@/modules/route/route'
 import * as submission from '@/modules/submission/route'
+import * as module from '@/modules/module/route'
 
 import { isAuthenticated } from '@/modules/auth/service'
 import { Express } from 'express'
@@ -21,8 +22,10 @@ const apis: Route[] = [
   { baseUrl: '', path: '/auth', source: auth },
   { baseUrl: '', path: '/my-profile', source: user.myProfile, scopes: [] },
   { baseUrl: '', path: '/route', source: route, scopes: [] },
+  { baseUrl: '/public', path: '/module', source: module.publicRoute, scopes: [] },
 
   { baseUrl: '/admin', path: '/user', source: user.adminRoute, scopes: [ScopeSlug.ADMIN] },
+  { baseUrl: '/admin', path: '/module', source: module.adminRoute, scopes: [ScopeSlug.ADMIN] },
 
   { baseUrl: '/instructor', path: '/user', source: user.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
   { baseUrl: '/instructor', path: '/submission', source: submission.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },

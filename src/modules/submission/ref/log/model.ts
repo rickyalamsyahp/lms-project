@@ -41,8 +41,8 @@ export const createSchema = async (knex: Knex) => {
         table.integer('submissionId').notNullable().index(`${Log.tableName}_submission_id`)
         table.string('filename', 32).notNullable()
         table.string('tag', 32).nullable().index(`${Log.tableName}_tag`)
-        table.timestamp('created_at').defaultTo(knex.fn.now())
-        table.string('created_by', 48)
+        table.timestamp('createdAt').defaultTo(knex.fn.now())
+        table.string('createdBy', 48)
 
         table.foreign('submissionId').references('id').inTable(Submission.tableName)
         table.foreign('filename').references('filename').inTable(FileMeta.tableName)
