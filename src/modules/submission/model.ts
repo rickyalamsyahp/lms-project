@@ -7,6 +7,7 @@ import User from '../user/model'
 
 import Log, { createSchema as createSchemaLog } from './ref/log/model'
 import Report, { createSchema as createSchemaReport } from './ref/report/model'
+import Module from '../module/model'
 
 export enum SubmissionStatus {
   ACTIVE = 'active',
@@ -20,6 +21,7 @@ export default class Submission extends objectionVisibility(Model) {
   train: string
   setting: object
   status: any
+  moduleId: string
 
   createdBy: string
   createdAt: Date
@@ -33,7 +35,7 @@ export default class Submission extends objectionVisibility(Model) {
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['owner', 'train', 'setting'],
+    required: ['owner', 'train', 'setting', 'moduleId'],
     properties: {
       owner: jsonProperties.uuid,
       train: { type: 'string', enum: ['KRL', 'MRT'] },
@@ -56,6 +58,14 @@ export default class Submission extends objectionVisibility(Model) {
       join: {
         from: `${this.tableName}.id`,
         to: `${Report.tableName}.submissionId`,
+      },
+    },
+    module: {
+      relation: Model.HasManyRelation,
+      modelClass: Module,
+      join: {
+        from: `${this.tableName}.moduleId`,
+        to: `${Module.tableName}.id`,
       },
     },
   })
