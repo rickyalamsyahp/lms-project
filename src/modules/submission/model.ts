@@ -18,10 +18,11 @@ export enum SubmissionStatus {
 export default class Submission extends objectionVisibility(Model) {
   id: number
   owner: string
-  train: string
+  objectType: string
   setting: object
   status: any
   moduleId: string
+  score: number
 
   createdBy: string
   createdAt: Date
@@ -35,10 +36,10 @@ export default class Submission extends objectionVisibility(Model) {
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['owner', 'train', 'setting', 'moduleId'],
+    required: ['owner', 'objectType', 'setting', 'moduleId'],
     properties: {
       owner: jsonProperties.uuid,
-      train: { type: 'string', enum: ['KRL', 'MRT'] },
+      objectType: { type: 'string', enum: ['KRL', 'MRT'] },
       status: { type: 'string', enum: enumToArray(SubmissionStatus) },
     },
   }
@@ -77,16 +78,18 @@ export const createSchema = async (knex: Knex) => {
       await knex.schema.createTable(Submission.tableName, (table) => {
         table.increments()
         table.string('owner', 36).notNullable().index(`${Submission.tableName}_owner`)
-        table.string('train', 16).notNullable().index(`${Submission.tableName}_train`)
+        table.string('objectType', 16).notNullable().index(`${Submission.tableName}_objectType`)
         table.string('status', 16).defaultTo(SubmissionStatus.ACTIVE)
         table.jsonb('setting').notNullable()
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
-        table.timestamp('finished_at').nullable()
-        table.timestamp('canceled_at').nullable()
-        table.string('reviewed_by', 48)
+        table.timestamp('finishedAt').nullable()
+        table.timestamp('canceledAt').nullable()
+        table.string('reviewedBy', 48)
+        table.integer('score').nullable()
 
         table.foreign('owner').references('id').inTable(User.tableName)
+        table.foreign('moduleId').references('id').inTable(Module.tableName)
       })
     }
 

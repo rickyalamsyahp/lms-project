@@ -16,5 +16,6 @@ export const publicRoute = () => {
   const router = Router()
   router.get('/', ctrl.index)
   router.get('/:id', ctrl.getById)
+  router.get('/:id/download', ctrl.downloadFile)
   return router
 }

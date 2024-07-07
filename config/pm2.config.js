@@ -1,13 +1,14 @@
 module.exports = {
   apps: [
     {
-      name: "gfac-user-service",
+      name: "gfac-service-user",
       script: './index.js',
       instances: 1,
       exec_mode: 'cluster',
       // watch: true,
       // increment_var: 'PORT',
       env: {
+        
         "PORT":"9000",
         "TCP_PORT":"9234",
         "TCP_HOST":"127.0.0.1",
@@ -25,6 +26,7 @@ module.exports = {
         "PROFILE_PICTURE_STORAGE":"./tmp/profile-picture",
         "SUBMISSION_LOG_STORAGE":"./tmp/submission/log",
         "SUBMISSION_REPORT_STORAGE":"./tmp/submission/report",
+        "API_GATEWAY":"http://localhost:9000"
       }
     }
   ]

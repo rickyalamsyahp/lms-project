@@ -6,6 +6,7 @@ import bodyParser from 'body-parser'
 import dbConnection from './middleware/db'
 import api from './middleware/api'
 import { BODY_LIMIT, CORS_HEADERS, PORT } from './constant/env'
+import swagger from './middleware/swagger'
 
 const app = express()
 const server = http.createServer(app)
@@ -23,6 +24,8 @@ app.use(
     limit: BODY_LIMIT,
   })
 )
+
+swagger(app)
 
 dbConnection(() => {
   api(app)

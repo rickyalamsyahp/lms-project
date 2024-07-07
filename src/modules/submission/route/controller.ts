@@ -88,6 +88,7 @@ export const finish = wrapAsync(async (req: EGRequest) => {
   const result = await item.$query().patchAndFetch({
     status: SubmissionStatus.FINISHED,
     finishedAt: new Date(),
+    score: req.body.score,
   })
 
   return result

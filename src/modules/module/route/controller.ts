@@ -5,6 +5,9 @@ import Item from '../model'
 import { ColumnRef, OrderByDirection } from 'objection'
 import { apiError } from '@/libs/apiError'
 import FileMeta from '@/modules/fileMeta/model'
+import { Response } from 'express'
+import fs from 'fs'
+import path from 'path'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -109,3 +112,15 @@ export const publish = wrapAsync(async (req: EGRequest) => {
 
   return result
 })
+
+export const downloadFile = async (req: EGRequest, res: Response) => {
+  const id = req.params.id
+  const mod = await Item.query().findById(id)
+  if (!mod) return res.status(404).send('Fraksi dengan ID yang ditentukan tidak ditemukan')
+  if (!mod.filename) return res.status(404).send('Logo untuk fraksi dengan ID yang ditentukan tidak ditemukan')
+
+  const fm = await FileMeta.query().findOne({ filename: mod.filename })
+  if (!fm) return res.status(404).send('File tidak ditemukan')
+  res.setHeader('content-type', fm.mimetype)
+  fs.createReadStream(path.resolve(fm.path)).pipe(res)
+}

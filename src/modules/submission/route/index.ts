@@ -30,3 +30,8 @@ export const instructorRoute = () => {
   router.delete('/:submissionId/report/:id', isSubmissionCreator(), reportCtrl.remove)
   return router
 }
+
+export const publicRoute = () => {
+  const router: Router = Router()
+  return router
+}
