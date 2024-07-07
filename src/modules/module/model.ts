@@ -1,7 +1,6 @@
 import { Model, JSONSchema } from 'objection'
 import { Knex } from 'knex'
 import objectionVisibility from 'objection-visibility'
-import User from '../user/model'
 
 export default class Module extends objectionVisibility(Model) {
   id: number
@@ -29,7 +28,7 @@ export default class Module extends objectionVisibility(Model) {
   }
 }
 
-export const createSchema = async (knex: Knex) => {
+export const createSchemaModule = async (knex: Knex) => {
   try {
     if (!(await knex.schema.hasTable(Module.tableName))) {
       await knex.schema.createTable(Module.tableName, (table) => {
@@ -43,8 +42,6 @@ export const createSchema = async (knex: Knex) => {
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
         table.string('modifiedBy', 48)
-
-        table.foreign('owner').references('id').inTable(User.tableName)
       })
     }
   } catch (error) {

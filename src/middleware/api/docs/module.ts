@@ -39,8 +39,6 @@ export default function moduleAPIDocs() {
  *            required: false
  *            schema:
  *              type: string
- *              example: Komisi I%
- *
  *      responses:
  *        default:
  *          description: sukses
@@ -85,7 +83,7 @@ export default function moduleAPIDocs() {
  *        content:
  *          multipart/form-data:
  *            schema:
- *              $ref: '#/components/schemas/Module'
+ *              $ref: '#/components/schemas/ModuleEdit'
  *      responses:
  *        default:
  *          description: sukses
@@ -155,8 +153,6 @@ export default function moduleAPIDocs() {
  *            required: false
  *            schema:
  *              type: string
- *              example: Komisi I%
- *
  *      responses:
  *        default:
  *          description: sukses
@@ -197,8 +193,21 @@ export default function moduleAPIDocs() {
  *    Module:
  *      type: object
  *      required:
- *        - name
- *        - email
+ *        - title
+ *        - file
+ *      properties:
+ *        file:
+ *          type: string
+ *          format: binary
+ *        title:
+ *          type: string
+ *          example: Pengenalan
+ *        description:
+ *          type: string
+ *    ModuleEdit:
+ *      type: object
+ *      required:
+ *        - title
  *      properties:
  *        file:
  *          type: string

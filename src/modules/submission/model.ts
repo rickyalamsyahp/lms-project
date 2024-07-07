@@ -78,6 +78,7 @@ export const createSchema = async (knex: Knex) => {
       await knex.schema.createTable(Submission.tableName, (table) => {
         table.increments()
         table.string('owner', 36).notNullable().index(`${Submission.tableName}_owner`)
+        table.integer('moduleId').notNullable().index(`${Submission.tableName}_module_id`)
         table.string('objectType', 16).notNullable().index(`${Submission.tableName}_objectType`)
         table.string('status', 16).defaultTo(SubmissionStatus.ACTIVE)
         table.jsonb('setting').notNullable()

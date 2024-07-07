@@ -11,6 +11,7 @@ import FileMeta from '@/modules/fileMeta/model'
 import { ScopeSlug } from '@/modules/scope/model'
 import UserBio from '../ref/bio/model'
 import { PROFILE_PICTURE_STORAGE } from '@/constant/env'
+import { ColumnRef, OrderByDirection } from 'objection'
 
 export const index = wrapAsync(async () => {
   const result = await User.query()
@@ -25,15 +26,15 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 })
 
 export const getUserByScope = wrapAsync(async (req: EGRequest) => {
-  const { page = 1, size = 20, ...query } = req.query
+  const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
   const result = await findQuery(User).build(
     query,
     User.query()
       .where({
-        scope: req.isInstructor ? ScopeSlug.TRAINEE : req.params.scope,
+        scope: req.params.scope,
       })
       .page(Number(page) - 1, Number(size))
-      .orderBy('createdAt', 'desc')
+      .orderBy(orderBy as ColumnRef, order as OrderByDirection)
   )
   return result
 })

@@ -97,7 +97,7 @@ export default function submissoinAPIDocs() {
  *            type: integer
  *      requestBody:
  *        content:
- *          aplication/json:
+ *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/Submission'
  *      responses:
@@ -147,7 +147,7 @@ export default function submissoinAPIDocs() {
  *            type: string
  *      requestBody:
  *        content:
- *          aplication/json:
+ *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/SubmissionFinish'
  *      responses:
@@ -162,8 +162,6 @@ export default function submissoinAPIDocs() {
  *    Submission:
  *      type: object
  *      properties:
- *        id:
- *          type: number
  *        owner:
  *          type: string
  *          required: true
@@ -176,12 +174,12 @@ export default function submissoinAPIDocs() {
  *          type: number
  *          required: true
  *          description: ID dari modul yang disimulasikan
+ *        setting:
+ *          type: object
+ *          description: JSON setting simulators
  *    SubmissionFinish:
  *      type: object
  *      properties:
- *        id:
- *          type: number
- *          required: true
  *        score:
  *          type: number
  *          required: true

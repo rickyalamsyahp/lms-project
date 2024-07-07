@@ -22,7 +22,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { owner, train, ...body } = req.body
+  const { owner, objectType, ...body } = req.body
 
   const trainee = await User.query().findById(owner).where({ scope: ScopeSlug.TRAINEE })
   if (!trainee) throw new apiError('Peserta dengan ID yang ditentukan tidak ditemukan', 404)
@@ -36,12 +36,13 @@ export const create = wrapAsync(async (req: EGRequest) => {
       .where({
         owner: trainee.id,
         status: SubmissionStatus.ACTIVE,
-        train,
+        objectType,
       })
+
     const item = await Item.query(trx).insertGraph({
       ...body,
       owner: trainee.id,
-      train,
+      objectType,
     })
 
     return item
@@ -69,8 +70,6 @@ export const cancel = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
   const item = await Item.query().findById(id)
   if (item.status === SubmissionStatus.FINISHED) {
-    const log = await Log.query().count().where({ submissionId: id })
-    console.log(log)
     throw new apiError(`Tidak dapat melakukan pembatalan terhadap submission yang sudah berstatus ${SubmissionStatus.FINISHED}`, 400)
   }
 
@@ -85,6 +84,7 @@ export const cancel = wrapAsync(async (req: EGRequest) => {
 export const finish = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
   const item = await Item.query().findById(id)
+
   const result = await item.$query().patchAndFetch({
     status: SubmissionStatus.FINISHED,
     finishedAt: new Date(),

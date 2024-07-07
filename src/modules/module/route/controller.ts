@@ -8,6 +8,7 @@ import FileMeta from '@/modules/fileMeta/model'
 import { Response } from 'express'
 import fs from 'fs'
 import path from 'path'
+import { MODULE_STORAGE } from '@/constant/env'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -33,7 +34,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
         encoding,
         mimetype,
         size,
-        path: `${process.env.SHARE_STORAGE}/${filename}`,
+        path: `${MODULE_STORAGE}/${filename}`,
       })
     }
 
@@ -55,7 +56,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id).withGraphJoined('log').withGraphJoined('report')
+  const result = await Item.query().findById(id)
   if (!result) throw new apiError('Modul dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })
@@ -74,7 +75,7 @@ export const update = wrapAsync(async (req: EGRequest) => {
         encoding,
         mimetype,
         size,
-        path: `${process.env.SHARE_STORAGE}/${filename}`,
+        path: `${MODULE_STORAGE}/${filename}`,
       })
     }
 
@@ -117,7 +118,7 @@ export const downloadFile = async (req: EGRequest, res: Response) => {
   const id = req.params.id
   const mod = await Item.query().findById(id)
   if (!mod) return res.status(404).send('Fraksi dengan ID yang ditentukan tidak ditemukan')
-  if (!mod.filename) return res.status(404).send('Logo untuk fraksi dengan ID yang ditentukan tidak ditemukan')
+  if (!mod.filename) return res.status(404).send('File untuk modul dengan ID yang ditentukan tidak ditemukan')
 
   const fm = await FileMeta.query().findOne({ filename: mod.filename })
   if (!fm) return res.status(404).send('File tidak ditemukan')

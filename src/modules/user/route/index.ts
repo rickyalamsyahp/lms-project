@@ -19,7 +19,7 @@ export const myProfile = () => {
 export const adminRoute = () => {
   const router: Router = Router()
   router.post(`/`, ctrl.createUser)
-  router.get(`/by-scope/:scope`, ctrl.getUserByScope)
+  router.get(`/scope/:scope`, ctrl.getUserByScope)
 
   router.get(`/:id`, ctrl.getById)
   router.put('/:id', ctrl.updateProfile)

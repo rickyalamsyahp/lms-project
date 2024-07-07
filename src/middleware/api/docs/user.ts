@@ -134,7 +134,7 @@ export default function userAPIDocs() {
 /**
  * @swagger
  * paths:
- *  /user/admin/user-account/scope/{scope}:
+ *  /admin/user-account/scope/{scope}:
  *    get:
  *      tags:
  *        - User Management
@@ -144,11 +144,11 @@ export default function userAPIDocs() {
  *      parameters:
  *        - name: scope
  *          in: path
- *          description: Scope akun user yang terdiri dari admin dan user
+ *          description: Scope akun user yang terdiri dari admin, instructor, dan trainee
  *          required: true
  *          schema:
  *            type: string
- *            example: user
+ *            example: trainee
  *        - name: page
  *          in: query
  *          description: Halaman
@@ -183,11 +183,10 @@ export default function userAPIDocs() {
  *          required: false
  *          schema:
  *            type: string
- *            example: guest%
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account:
+ *  /admin/user-account:
  *    post:
  *      tags:
  *        - User Management
@@ -217,7 +216,7 @@ export default function userAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account/{id}:
+ *  /admin/user-account/{id}:
  *    get:
  *      tags:
  *        - User Management
@@ -247,7 +246,7 @@ export default function userAPIDocs() {
  *            type: integer
  *      requestBody:
  *        content:
- *          aplication/json:
+ *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/UserProfile'
  *      responses:
@@ -268,7 +267,7 @@ export default function userAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account/{id}/link-credential:
+ *  /admin/user-account/{id}/link-credential:
  *    put:
  *      description: Sinkronisasi ulang credential user ke express gateway
  *      tags:
@@ -285,7 +284,7 @@ export default function userAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account/{id}/activate:
+ *  /admin/user-account/{id}/activate:
  *    put:
  *      description: Merubah status aktif user
  *      tags:
@@ -302,7 +301,7 @@ export default function userAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account/{id}/change-password:
+ *  /admin/user-account/{id}/change-password:
  *    put:
  *      description: Mengganti password user
  *      tags:
@@ -329,7 +328,7 @@ export default function userAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /user/admin/user-account/{id}/avatar:
+ *  /admin/user-account/{id}/avatar:
  *    put:
  *      tags:
  *        - User Management
