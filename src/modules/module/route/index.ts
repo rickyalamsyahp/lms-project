@@ -17,6 +17,12 @@ export const adminRoute = () => {
   return router
 }
 
+export const instructorRoute = () => {
+  const router = Router()
+  router.get('/')
+  return router
+}
+
 export const publicRoute = () => {
   const router = Router()
   router.get('/', ctrl.index)

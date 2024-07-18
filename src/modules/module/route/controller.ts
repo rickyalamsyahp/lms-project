@@ -9,6 +9,7 @@ import { Response } from 'express'
 import fs from 'fs'
 import path from 'path'
 import { MODULE_STORAGE } from '@/constant/env'
+import Submission from '@/modules/submission/model'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -125,3 +126,9 @@ export const downloadFile = async (req: EGRequest, res: Response) => {
   res.setHeader('content-type', fm.mimetype)
   fs.createReadStream(path.resolve(fm.path)).pipe(res)
 }
+
+export const getModuleStatistic = wrapAsync(async (req: EGRequest) => {
+  const { id } = req.params
+  const totalSubmission = await Submission.query().count().where({ moduleId: id })
+  return totalSubmission
+})
