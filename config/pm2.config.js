@@ -8,7 +8,7 @@ module.exports = {
       // watch: true,
       // increment_var: 'PORT',
       env: {
-        
+        "NODE_ENV":"production",
         "PORT":"9000",
         "TCP_PORT":"9234",
         "TCP_HOST":"127.0.0.1",
