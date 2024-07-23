@@ -1,9 +1,9 @@
-import hello from '@/modules/hello/route'
 import auth from '@/modules/auth/route'
 import * as user from '@/modules/user/route'
 import route from '@/modules/route/route'
 import * as submission from '@/modules/submission/route'
-import * as moduleApi from '@/modules/module/route'
+import * as courseApi from '@/modules/course/route'
+import * as courseExamApi from '@/modules/courseExam/route'
 
 import { isAuthenticated } from '@/modules/auth/service'
 import { Express } from 'express'
@@ -11,7 +11,8 @@ import { ScopeSlug } from '@/modules/scope/model'
 import authAPIDocs from './docs/auth'
 import userAPIDocs from './docs/user'
 import submissoinAPIDocs from './docs/submission'
-import moduleAPIDocs from './docs/module'
+import courseAPIDocs from './docs/course'
+import courseExamAPIDocs from './docs/course-exam'
 
 type Route = {
   path: string
@@ -23,19 +24,27 @@ type Route = {
 }
 
 const apis: Route[] = [
-  { baseUrl: '/world', path: '/hello', source: hello },
   { baseUrl: '', path: '/auth', source: auth, docs: authAPIDocs },
+  { baseUrl: '/open', path: '/user-account', source: user.openRoute },
+
   { baseUrl: '', path: '/my-profile', source: user.myProfile, scopes: [], docs: userAPIDocs },
   { baseUrl: '', path: '/route', source: route, scopes: [] },
-  { baseUrl: '/public', path: '/module', source: moduleApi.publicRoute, scopes: [] },
+
+  { baseUrl: '/public', path: '/user-account', source: user.publicRoute, scopes: [] },
+  { baseUrl: '/public', path: '/course', source: courseApi.publicRoute, scopes: [] },
   { baseUrl: '/public', path: '/submission', source: submission.publicRoute, scopes: [], docs: submissoinAPIDocs },
-  { baseUrl: '/public', path: '/module', source: moduleApi.publicRoute, scopes: [], docs: moduleAPIDocs },
+  { baseUrl: '/public', path: '/course', source: courseApi.publicRoute, scopes: [], docs: courseAPIDocs },
+  { baseUrl: '/public', path: '/course-exam', source: courseExamApi.publicRoute, scopes: [], docs: courseExamAPIDocs },
 
   { baseUrl: '/admin', path: '/user-account', source: user.adminRoute, scopes: [ScopeSlug.ADMIN] },
-  { baseUrl: '/admin', path: '/module', source: moduleApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
+  { baseUrl: '/admin', path: '/submission', source: submission.adminRoute, scopes: [ScopeSlug.ADMIN] },
+  { baseUrl: '/admin', path: '/course', source: courseApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
+  { baseUrl: '/admin', path: '/course-exam', source: courseExamApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
 
   { baseUrl: '/instructor', path: '/user-account', source: user.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
   { baseUrl: '/instructor', path: '/submission', source: submission.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
+  { baseUrl: '/instructor', path: '/course', source: courseApi.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
+  { baseUrl: '/instructor', path: '/course-exam', source: courseExamApi.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
 ]
 
 export default (app: Express) => {

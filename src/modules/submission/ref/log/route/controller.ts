@@ -58,13 +58,13 @@ export const create = wrapAsync(async (req: EGRequest) => {
 })
 
 export const remove = wrapAsync(async (req: EGRequest) => {
-  const { id } = req.params
+  const { id, submissionId } = req.params
   const item = await Item.query().findById(id)
   if (!item) throw new apiError(`File log dengan ID yang ditentukan tidak ditemukan`, 404)
 
   const result = await Item.transaction(async (trx) => {
+    const result = await Item.query(trx).deleteById(id).where({ submissionId })
     await FileMeta.query(trx).delete().where({ filename: item.filename })
-    const result = await Item.query(trx).deleteById(id)
     return result
   })
 

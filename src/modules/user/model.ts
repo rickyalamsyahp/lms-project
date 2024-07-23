@@ -72,8 +72,8 @@ export const createSchema = async (knex: Knex) => {
       })
     }
 
-    await seed()
     await createSchemaUserBio(knex)
+    await seed()
   } catch (error) {
     throw new Error(error)
   }

@@ -5,10 +5,10 @@ export default function submissoinAPIDocs() {
 /**
  * @swagger
  * paths:
- *  /instructor/submission:
+ *  /admin/submission:
  *    get:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -44,19 +44,237 @@ export default function submissoinAPIDocs() {
  *          in: query
  *          description: Pencarian berdasarkan jenis objek
  *          required: false
- *        - name: module.name:likelower
+ *        - name: course.name:likelower
  *          in: query
- *          description: Pencarian berdasarkan nama modul
+ *          description: Pencarian berdasarkan nama course
  *          required: false
  *          schema:
  *            type: string
- *            example: %mengemudi%
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /admin/submission/{id}:
+ *    get:
+ *      tags:
+ *        - Submission - Admin
+ *      security:
+ *        - accessToken: []
+ *        - apiKey: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: string
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
+ * paths:
+ *  /admin/submission/{submissionId}/report:
+ *    get:
+ *      tags:
+ *        - Submission Report - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: page
+ *          in: query
+ *          description: Halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 1
+ *        - name: size
+ *          in: query
+ *          description: Jumlah baris data dalam setiap halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 20
+ *        - name: order
+ *          in: query
+ *          description: Urutan data pada tabel dengan pilihan asc atau desc
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: desc
+ *        - name: orderBy
+ *          in: query
+ *          description: Kolom yang menjadi referensi pengurutan data
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: createdAt
+ *        - name: objectType:eq
+ *          in: query
+ *          description: Pencarian berdasarkan jenis objek
+ *          required: false
+ *        - name: tag.name:likelower
+ *          in: query
+ *          description: Pencarian berdasarkan tag
+ *          required: false
+ *          schema:
+ *            type: string
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /admin/submission/{submissionId}/report/{reportId}:
+ *    get:
+ *      description: download report file
+ *      tags:
+ *        - Submission Report - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: reportId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
+ * paths:
+ *  /admin/submission/{submissionId}/log:
+ *    get:
+ *      tags:
+ *        - Submission Log - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: page
+ *          in: query
+ *          description: Halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 1
+ *        - name: size
+ *          in: query
+ *          description: Jumlah baris data dalam setiap halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 20
+ *        - name: order
+ *          in: query
+ *          description: Urutan data pada tabel dengan pilihan asc atau desc
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: desc
+ *        - name: orderBy
+ *          in: query
+ *          description: Kolom yang menjadi referensi pengurutan data
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: createdAt
+ *        - name: objectType:eq
+ *          in: query
+ *          description: Pencarian berdasarkan jenis objek
+ *          required: false
+ *        - name: tag.name:likelower
+ *          in: query
+ *          description: Pencarian berdasarkan tag
+ *          required: false
+ *          schema:
+ *            type: string
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /admin/submission/{submissionId}/log/{logId}:
+ *    get:
+ *      description: download log file
+ *      tags:
+ *        - Submission Log - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
+ * paths:
+ *  /instructor/submission:
+ *    get:
+ *      tags:
+ *        - Submission - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: page
+ *          in: query
+ *          description: Halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 1
+ *        - name: size
+ *          in: query
+ *          description: Jumlah baris data dalam setiap halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 20
+ *        - name: order
+ *          in: query
+ *          description: Urutan data pada tabel dengan pilihan asc atau desc
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: desc
+ *        - name: orderBy
+ *          in: query
+ *          description: Kolom yang menjadi referensi pengurutan data
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: createdAt
+ *        - name: objectType:eq
+ *          in: query
+ *          description: Pencarian berdasarkan jenis objek
+ *          required: false
+ *        - name: course.name:likelower
+ *          in: query
+ *          description: Pencarian berdasarkan nama course
+ *          required: false
+ *          schema:
+ *            type: string
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
  *      responses:
  *        default:
  *          description: sukses
  *    post:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Instructor
  *      security:
  *        - accessToken: []
  *      requestBody:
@@ -70,7 +288,7 @@ export default function submissoinAPIDocs() {
  *  /instructor/submission/{id}:
  *    get:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Instructor
  *      security:
  *        - accessToken: []
  *        - apiKey: []
@@ -83,29 +301,9 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *    put:
- *      tags:
- *        - Submission Instructor
- *      security:
- *        - accessToken: []
- *        - apiKey: []
- *      parameters:
- *        - name: id
- *          in: path
- *          required: true
- *          schema:
- *            type: integer
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Submission'
- *      responses:
- *        default:
- *          description: sukses
  *    delete:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Instructor
  *      security:
  *        - accessToken: []
  *        - apiKey: []
@@ -121,7 +319,7 @@ export default function submissoinAPIDocs() {
  *  /instructor/submission/{id}/cancel:
  *    put:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Instructor
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -136,7 +334,7 @@ export default function submissoinAPIDocs() {
  *  /instructor/submission/{id}/finish:
  *    put:
  *      tags:
- *        - Submission Instructor
+ *        - Submission - Instructor
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -157,6 +355,220 @@ export default function submissoinAPIDocs() {
 
 /**
  * @swagger
+ * paths:
+ *  /instructor/submission/{submissionId}/log:
+ *    get:
+ *      tags:
+ *        - Submission Log - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: page
+ *          in: query
+ *          description: Halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 1
+ *        - name: size
+ *          in: query
+ *          description: Jumlah baris data dalam setiap halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 20
+ *        - name: order
+ *          in: query
+ *          description: Urutan data pada tabel dengan pilihan asc atau desc
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: desc
+ *        - name: orderBy
+ *          in: query
+ *          description: Kolom yang menjadi referensi pengurutan data
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: createdAt
+ *        - name: objectType:eq
+ *          in: query
+ *          description: Pencarian berdasarkan jenis objek
+ *          required: false
+ *        - name: tag.name:likelower
+ *          in: query
+ *          description: Pencarian berdasarkan tag
+ *          required: false
+ *          schema:
+ *            type: string
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
+ *      responses:
+ *        default:
+ *          description: sukses
+ *    post:
+ *      tags:
+ *        - Submission Log - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *      requestBody:
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              $ref: '#/components/schemas/SubmissionLog'
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /instructor/submission/{submissionId}/log/{logId}:
+ *    get:
+ *      description: download log file
+ *      tags:
+ *        - Submission Log - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *    delete:
+ *      description: remove log file
+ *      tags:
+ *        - Submission Log - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
+ * paths:
+ *  /instructor/submission/{submissionId}/report:
+ *    get:
+ *      tags:
+ *        - Submission Report - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: page
+ *          in: query
+ *          description: Halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 1
+ *        - name: size
+ *          in: query
+ *          description: Jumlah baris data dalam setiap halaman
+ *          required: false
+ *          schema:
+ *            type: integer
+ *            example: 20
+ *        - name: order
+ *          in: query
+ *          description: Urutan data pada tabel dengan pilihan asc atau desc
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: desc
+ *        - name: orderBy
+ *          in: query
+ *          description: Kolom yang menjadi referensi pengurutan data
+ *          required: false
+ *          schema:
+ *            type: string
+ *            example: createdAt
+ *        - name: objectType:eq
+ *          in: query
+ *          description: Pencarian berdasarkan jenis objek
+ *          required: false
+ *        - name: tag.name:likelower
+ *          in: query
+ *          description: Pencarian berdasarkan tag
+ *          required: false
+ *          schema:
+ *            type: string
+ *            description: untuk pencarian menggunakan format %[KEYWORD]%
+ *      responses:
+ *        default:
+ *          description: sukses
+ *    post:
+ *      tags:
+ *        - Submission Report - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *      requestBody:
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              $ref: '#/components/schemas/SubmissionReport'
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /instructor/submission/{submissionId}/report/{reportId}:
+ *    get:
+ *      description: download report file
+ *      tags:
+ *        - Submission Report - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: reportId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *    delete:
+ *      description: remove report file
+ *      tags:
+ *        - Submission Report - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
  * components:
  *  schemas:
  *    Submission:
@@ -170,10 +582,14 @@ export default function submissoinAPIDocs() {
  *          type: string
  *          required: true
  *          description: Jenis Objek, contoh untuk kereta adalah KRL atau MRT
- *        moduleId:
+ *        courseId:
  *          type: number
  *          required: true
- *          description: ID dari modul yang disimulasikan
+ *          description: ID dari course yang disimulasikan
+ *        courseExamId:
+ *          type: number
+ *          required: true
+ *          description: ID course exam yang dipilih
  *        setting:
  *          type: object
  *          description: JSON setting simulators
@@ -183,4 +599,29 @@ export default function submissoinAPIDocs() {
  *        score:
  *          type: number
  *          required: true
+ *        assessment:
+ *          type: object
+ *          description: JSON form penilaian yang telah diisi
+ *    SubmissionLog:
+ *      type: object
+ *      required:
+ *        - file
+ *        - tag
+ *      properties:
+ *        file:
+ *          type: string
+ *          format: binary
+ *        tag:
+ *          type: string
+ *    SubmissionReport:
+ *      type: object
+ *      required:
+ *        - file
+ *        - tag
+ *      properties:
+ *        file:
+ *          type: string
+ *          format: binary
+ *        tag:
+ *          type: string
  */

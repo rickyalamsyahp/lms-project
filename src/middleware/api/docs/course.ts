@@ -1,17 +1,23 @@
-export default function moduleAPIDocs() {
-  console.log('generate Module API Docs')
+export default function courseAPIDocs() {
+  console.log('generate Course API Docs')
 }
 
 /**
  * @swagger
  * paths:
- *  /admin/module:
+ *  /admin/course:
  *    get:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
+ *          - name: page
+ *            in: query
+ *            required: false
+ *            schema:
+ *              type: integer
+ *              example: 1
  *          - name: size
  *            in: query
  *            description: Jumlah baris data dalam setiap halaman
@@ -33,7 +39,7 @@ export default function moduleAPIDocs() {
  *            schema:
  *              type: string
  *              example: createdAt
- *          - name: name:likeLower
+ *          - name: title:likeLower
  *            in: query
  *            description: Pencarian berdasarkan nama user. Dokumentasi filter bisa dilihat disini https://github.com/Vincit/objection-find
  *            required: false
@@ -44,21 +50,21 @@ export default function moduleAPIDocs() {
  *          description: sukses
  *    post:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      requestBody:
  *        content:
  *          multipart/form-data:
  *            schema:
- *              $ref: '#/components/schemas/Module'
+ *              $ref: '#/components/schemas/Course'
  *      responses:
  *        default:
  *          description: sukses
- *  /admin/module/{id}:
+ *  /admin/course/{id}:
  *    get:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -71,7 +77,7 @@ export default function moduleAPIDocs() {
  *          description: sukses
  *    put:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -83,13 +89,13 @@ export default function moduleAPIDocs() {
  *        content:
  *          multipart/form-data:
  *            schema:
- *              $ref: '#/components/schemas/ModuleEdit'
+ *              $ref: '#/components/schemas/CourseEdit'
  *      responses:
  *        default:
  *          description: sukses
  *    delete:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -100,10 +106,10 @@ export default function moduleAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /admin/module/{id}/publish:
+ *  /admin/course/{id}/publish:
  *    put:
  *      tags:
- *        - Module Management
+ *        - Course - Admin
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -119,13 +125,19 @@ export default function moduleAPIDocs() {
 /**
  * @swagger
  * paths:
- *  /public/module:
+ *  /instructor/course:
  *    get:
  *      tags:
- *        - Module Public
+ *        - Course - Instructor
  *      security:
  *        - accessToken: []
  *      parameters:
+ *          - name: page
+ *            in: query
+ *            required: false
+ *            schema:
+ *              type: integer
+ *              example: 1
  *          - name: size
  *            in: query
  *            description: Jumlah baris data dalam setiap halaman
@@ -147,7 +159,7 @@ export default function moduleAPIDocs() {
  *            schema:
  *              type: string
  *              example: createdAt
- *          - name: name:likeLower
+ *          - name: title:likeLower
  *            in: query
  *            description: Pencarian berdasarkan nama user. Dokumentasi filter bisa dilihat disini https://github.com/Vincit/objection-find
  *            required: false
@@ -156,10 +168,10 @@ export default function moduleAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /public/module/{id}:
+ *  /instructor/course/{id}:
  *    get:
  *      tags:
- *        - Module Public
+ *        - Course - Instructor
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -170,10 +182,10 @@ export default function moduleAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /public/module/{id}/download:
+ *  /instructor/course/{id}/download:
  *    get:
  *      tags:
- *        - Module Public
+ *        - Course - Instructor
  *      security:
  *        - accessToken: []
  *      parameters:
@@ -188,9 +200,117 @@ export default function moduleAPIDocs() {
 
 /**
  * @swagger
+ * paths:
+ *  /public/course:
+ *    get:
+ *      tags:
+ *        - Course - Public
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *          - name: page
+ *            in: query
+ *            required: false
+ *            schema:
+ *              type: integer
+ *              example: 1
+ *          - name: size
+ *            in: query
+ *            description: Jumlah baris data dalam setiap halaman
+ *            required: false
+ *            schema:
+ *              type: integer
+ *              example: 20
+ *          - name: order
+ *            in: query
+ *            description: Urutan data pada tabel dengan pilihan asc atau desc
+ *            required: false
+ *            schema:
+ *              type: string
+ *              example: desc
+ *          - name: orderBy
+ *            in: query
+ *            description: Kolom yang menjadi referensi pengurutan data
+ *            required: false
+ *            schema:
+ *              type: string
+ *              example: createdAt
+ *          - name: title:likeLower
+ *            in: query
+ *            description: Pencarian berdasarkan nama user. Dokumentasi filter bisa dilihat disini https://github.com/Vincit/objection-find
+ *            required: false
+ *            schema:
+ *              type: string
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /public/course/{id}:
+ *    get:
+ *      tags:
+ *        - Course - Public
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID module
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /public/course/{id}/download:
+ *    get:
+ *      tags:
+ *        - Course - Public
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID module
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /public/course/{id}/stats:
+ *    get:
+ *      tags:
+ *        - Course - Public
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID module
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *  /public/course/{id}/stats/{userId}:
+ *    get:
+ *      tags:
+ *        - Course - Public
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID course
+ *          required: true
+ *        - name: userId
+ *          description: ID user
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ */
+
+/**
+ * @swagger
  * components:
  *  schemas:
- *    Module:
+ *    Course:
  *      type: object
  *      required:
  *        - title
@@ -204,7 +324,10 @@ export default function moduleAPIDocs() {
  *          example: Pengenalan
  *        description:
  *          type: string
- *    ModuleEdit:
+ *        level:
+ *          type: number
+ *          description: digunakan untuk menentukan urutan
+ *    CourseEdit:
  *      type: object
  *      required:
  *        - title
@@ -217,4 +340,7 @@ export default function moduleAPIDocs() {
  *          example: Pengenalan
  *        description:
  *          type: string
+ *        level:
+ *          type: number
+ *          description: digunakan untuk menentukan urutan
  */

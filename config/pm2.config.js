@@ -26,7 +26,7 @@ module.exports = {
         "PROFILE_PICTURE_STORAGE":"./tmp/profile-picture",
         "SUBMISSION_LOG_STORAGE":"./tmp/submission/log",
         "SUBMISSION_REPORT_STORAGE":"./tmp/submission/report",
-        "MODULE_STORAGE":"./tmp/module",
+        "COURSE_STORAGE":"./tmp/module",
         "API_GATEWAY":"http://localhost:9000"
       }
     }

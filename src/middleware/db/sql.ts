@@ -6,7 +6,8 @@ import { createSchema as createSchemaFilemeta } from '@/modules/fileMeta/model'
 import { createSchema as createSchemaUser } from '@/modules/user/model'
 import { createSchema as createSchemaSubmission } from '@/modules/submission/model'
 import { CREATE_TABLE, PG_DATABASE, PG_HOST, PG_PASSWORD, PG_PORT, PG_USER, PG_VERSION } from '@/constant/env'
-import { createSchemaModule } from '@/modules/module/model'
+import { createSchemaCourse } from '@/modules/course/model'
+import { createSchemaCourseExam } from '@/modules/courseExam/model'
 
 export const sqlConnection = () =>
   new Promise(async (resolve, reject) => {
@@ -35,7 +36,8 @@ export const sqlConnection = () =>
       await createSchemaFilemeta(knexConnection)
       await createSchemaUser(knexConnection)
       await createSchemaSubmission(knexConnection)
-      await createSchemaModule(knexConnection)
+      await createSchemaCourse(knexConnection)
+      await createSchemaCourseExam(knexConnection)
       // End of create table
       resolve(knexConnection)
     } catch (error) {

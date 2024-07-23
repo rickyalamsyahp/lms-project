@@ -6,7 +6,7 @@ import { ColumnRef, OrderByDirection } from 'objection'
 import { apiError } from '@/libs/apiError'
 import User from '@/modules/user/model'
 import { ScopeSlug } from '@/modules/scope/model'
-import Log from '../ref/log/model'
+import SubmissionExam from '../ref/exam/model'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -22,10 +22,12 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { owner, objectType, ...body } = req.body
+  const { owner, objectType, setting, ...body } = req.body
 
   const trainee = await User.query().findById(owner).where({ scope: ScopeSlug.TRAINEE })
   if (!trainee) throw new apiError('Peserta dengan ID yang ditentukan tidak ditemukan', 404)
+
+  if (!setting) throw new apiError(`Setting simulasi wajib disertakan`, 400)
 
   const item = await Item.transaction(async (trx: any) => {
     await Item.query(trx)
@@ -45,6 +47,11 @@ export const create = wrapAsync(async (req: EGRequest) => {
       objectType,
     })
 
+    await SubmissionExam.query(trx).insertGraph({
+      submissionId: item.id,
+      setting,
+    })
+
     return item
   })
 
@@ -54,7 +61,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id).withGraphJoined('log').withGraphJoined('report')
+  const result = await Item.query().findById(id).withGraphJoined('exam')
   if (!result) throw new apiError('Item dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })
@@ -83,12 +90,19 @@ export const cancel = wrapAsync(async (req: EGRequest) => {
 
 export const finish = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
+  const { assessment, score } = req.body
+
   const item = await Item.query().findById(id)
 
-  const result = await item.$query().patchAndFetch({
-    status: SubmissionStatus.FINISHED,
-    finishedAt: new Date(),
-    score: req.body.score,
+  const result = await Item.transaction(async (trx) => {
+    await SubmissionExam.query(trx).patch({ assessment }).where({ submissionId: id })
+    const result = await item.$query(trx).patchAndFetch({
+      status: SubmissionStatus.FINISHED,
+      finishedAt: new Date(),
+      score,
+    })
+
+    return result
   })
 
   return result

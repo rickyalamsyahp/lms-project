@@ -7,7 +7,10 @@ import User from '../user/model'
 
 import Log, { createSchema as createSchemaLog } from './ref/log/model'
 import Report, { createSchema as createSchemaReport } from './ref/report/model'
-import Module from '../module/model'
+import Course from '../course/model'
+import CourseExam from '../courseExam/model'
+import SubmissionExam, { createSchemaSubmissionExam } from './ref/exam/model'
+import { SUBMISSION_OBJECT_TYPE } from '@/constant/env'
 
 export enum SubmissionStatus {
   ACTIVE = 'active',
@@ -19,9 +22,9 @@ export default class Submission extends objectionVisibility(Model) {
   id: number
   owner: string
   objectType: string
-  setting: object
   status: any
-  moduleId: string
+  courseId: number
+  courseExamId: number
   score: number
 
   createdBy: string
@@ -31,15 +34,16 @@ export default class Submission extends objectionVisibility(Model) {
 
   log: Log
   report: Report
+  exam: SubmissionExam
 
   static tableName = 'submission'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['owner', 'objectType', 'setting', 'moduleId'],
+    required: ['owner', 'objectType', 'courseId', 'courseExamId'],
     properties: {
       owner: jsonProperties.uuid,
-      objectType: { type: 'string', enum: ['KRL', 'MRT'] },
+      objectType: { type: 'string', enum: SUBMISSION_OBJECT_TYPE },
       status: { type: 'string', enum: enumToArray(SubmissionStatus) },
     },
   }
@@ -61,12 +65,28 @@ export default class Submission extends objectionVisibility(Model) {
         to: `${Report.tableName}.submissionId`,
       },
     },
-    module: {
+    course: {
       relation: Model.HasManyRelation,
-      modelClass: Module,
+      modelClass: Course,
       join: {
-        from: `${this.tableName}.moduleId`,
-        to: `${Module.tableName}.id`,
+        from: `${this.tableName}.courseId`,
+        to: `${Course.tableName}.id`,
+      },
+    },
+    courseExam: {
+      relation: Model.HasManyRelation,
+      modelClass: CourseExam,
+      join: {
+        from: `${this.tableName}.courseExamId`,
+        to: `${CourseExam.tableName}.id`,
+      },
+    },
+    exam: {
+      relation: Model.HasOneRelation,
+      modelClass: SubmissionExam,
+      join: {
+        from: `${this.tableName}.id`,
+        to: `${SubmissionExam.tableName}.submissionId`,
       },
     },
   })
@@ -78,10 +98,10 @@ export const createSchema = async (knex: Knex) => {
       await knex.schema.createTable(Submission.tableName, (table) => {
         table.increments()
         table.string('owner', 36).notNullable().index(`${Submission.tableName}_owner`)
-        table.integer('moduleId').notNullable().index(`${Submission.tableName}_module_id`)
+        table.integer('courseId').notNullable().index(`${Submission.tableName}_course_id`)
+        table.integer('courseExamId').notNullable().index(`${Submission.tableName}_course_exam_id`)
         table.string('objectType', 16).notNullable().index(`${Submission.tableName}_objectType`)
         table.string('status', 16).defaultTo(SubmissionStatus.ACTIVE)
-        table.jsonb('setting').notNullable()
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
         table.timestamp('finishedAt').nullable()
@@ -90,12 +110,14 @@ export const createSchema = async (knex: Knex) => {
         table.integer('score').nullable()
 
         table.foreign('owner').references('id').inTable(User.tableName)
-        table.foreign('moduleId').references('id').inTable(Module.tableName)
+        table.foreign('courseId').references('id').inTable(Course.tableName)
+        table.foreign('courseExamId').references('id').inTable(CourseExam.tableName)
       })
     }
 
     await createSchemaLog(knex)
     await createSchemaReport(knex)
+    await createSchemaSubmissionExam(knex)
   } catch (error) {
     throw new Error(error)
   }

@@ -9,6 +9,19 @@ import { SUBMISSION_LOG_STORAGE } from '@/constant/env'
 
 const uploadDest = `${path.resolve(SUBMISSION_LOG_STORAGE)}`
 
+export const adminRoute = () => {
+  const router: Router = Router()
+  router.get('/', ctrl.index)
+  router.get('/:id', ctrl.getById)
+
+  router.get('/:submissionId/log', logCtrl.index)
+  router.get('/:submissionId/log/:id', isSubmissionCreator(), logCtrl.download)
+
+  router.get('/:submissionId/report', reportCtrl.index)
+  router.get('/:submissionId/report/:id', isSubmissionCreator(), reportCtrl.download)
+  return router
+}
+
 export const instructorRoute = () => {
   const router: Router = Router()
   router.get('/', ctrl.index)

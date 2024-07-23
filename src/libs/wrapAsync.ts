@@ -6,21 +6,21 @@ export default (handler: any) => (req: Request, res: Response) =>
     .catch((error: any) => {
       let message
       let statusCode = error.statusCode || 500
-      switch (error.code) {
+      switch (error?.nativeError?.code) {
         case '23502':
           message = error.message
           statusCode = 400
           break
         case '23503':
-          message = 'This record can’t be deleted because another record refers to it'
+          message = 'Data record ini tidak dapat dihapus karena data lain merujuk padanya, atau data rujukan tidak ditemukan'
           statusCode = 400
           break
         case '23505':
-          message = 'This record contains duplicated data that conflicts with what is already in the database'
+          message = 'Berisi data duplikat yang bertentangan dengan data yang sudah ada di database'
           statusCode = 400
           break
         case '23514':
-          message = 'This record contains inconsistent or out-of-range data'
+          message = 'Data record ini berisi data yang tidak konsisten atau di luar jangkauan'
           statusCode = 400
           break
         default:
@@ -28,9 +28,9 @@ export default (handler: any) => (req: Request, res: Response) =>
       }
 
       const errResult: any = { errorMessage: message }
-      if (error.detail) {
+      if (error?.nativeError?.detail) {
         const details: any = {}
-        error.detail.split('.').forEach((item: any) => {
+        error.nativeError.detail.split('.').forEach((item: any) => {
           const a = item.split('=')
           if (a.length > 1 && a[0]) {
             details[a[0].replace(/Key \(|\)/gm, '') as keyof typeof details] = a[1].replace(/\(|\)/gm, '')

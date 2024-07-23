@@ -11,7 +11,7 @@ export const myProfile = () => {
   router.put(`/change-password`, ctrl.changePassword)
   router.get(`/`, ctrl.getProfile)
   router.put('/', ctrl.updateProfile)
-  router.get('/avatar/:filename', ctrl.getAvatar)
+  router.get('/avatar', ctrl.getAvatar)
   router.put('/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
   return router
 }
@@ -24,19 +24,35 @@ export const adminRoute = () => {
   router.get(`/:id`, ctrl.getById)
   router.put('/:id', ctrl.updateProfile)
   router.delete(`/:id`, ctrl.remove)
-  router.put(`/:id/change-status`, ctrl.changeStatus)
+  router.put(`/:id/activate`, ctrl.activate)
   router.put(`/:id/change-password`, ctrl.changePassword)
+  router.put('/:id/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
 
   return router
 }
 
 export const instructorRoute = () => {
   const router: Router = Router()
-  router.post(`/`, ctrl.createUser)
   router.get(`/`, ctrl.getUserByScope)
+  router.post(`/`, ctrl.createUser)
   router.get(`/:id`, ctrl.getById)
   router.put('/:id', ctrl.updateProfile)
   router.delete(`/:id`, ctrl.remove)
+  router.put('/:id/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
+
+  return router
+}
+
+export const publicRoute = () => {
+  const router: Router = Router()
+  router.get(`/:id`, ctrl.getById)
+
+  return router
+}
+
+export const openRoute = () => {
+  const router: Router = Router()
+  router.get('/:id/avatar/:filename', ctrl.getAvatar)
 
   return router
 }

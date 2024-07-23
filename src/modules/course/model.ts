@@ -1,12 +1,14 @@
 import { Model, JSONSchema } from 'objection'
 import { Knex } from 'knex'
 import objectionVisibility from 'objection-visibility'
+import FileMeta from '../fileMeta/model'
 
-export default class Module extends objectionVisibility(Model) {
+export default class Course extends objectionVisibility(Model) {
   id: number
   filename: string
   title: string
   description: string
+  level: number
 
   published: boolean
   publishedAt: Date
@@ -17,7 +19,7 @@ export default class Module extends objectionVisibility(Model) {
   modifiedBy: string
   modifiedAt: Date
 
-  static tableName = 'module'
+  static tableName = 'course'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
@@ -28,20 +30,23 @@ export default class Module extends objectionVisibility(Model) {
   }
 }
 
-export const createSchemaModule = async (knex: Knex) => {
+export const createSchemaCourse = async (knex: Knex) => {
   try {
-    if (!(await knex.schema.hasTable(Module.tableName))) {
-      await knex.schema.createTable(Module.tableName, (table) => {
+    if (!(await knex.schema.hasTable(Course.tableName))) {
+      await knex.schema.createTable(Course.tableName, (table) => {
         table.increments()
-        table.string('title', 160).notNullable().index(`${Module.tableName}_title`)
+        table.string('title', 160).notNullable().index(`${Course.tableName}_title`)
         table.text('description').nullable()
         table.string('filename', 32).notNullable()
         table.boolean('published').defaultTo(false)
         table.timestamp('publishedAt').nullable()
+        table.integer('level').defaultTo(1)
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
         table.string('modifiedBy', 48)
+
+        table.foreign('filename').references('filename').inTable(FileMeta.tableName)
       })
     }
   } catch (error) {

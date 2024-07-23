@@ -31,7 +31,7 @@ export const getUserByScope = wrapAsync(async (req: EGRequest) => {
     query,
     User.query()
       .where({
-        scope: req.params.scope,
+        scope: req.isAdmin ? req.params.scope : ScopeSlug.TRAINEE,
       })
       .page(Number(page) - 1, Number(size))
       .orderBy(orderBy as ColumnRef, order as OrderByDirection)
@@ -39,14 +39,13 @@ export const getUserByScope = wrapAsync(async (req: EGRequest) => {
   return result
 })
 
-export const changeStatus = wrapAsync(async (req: EGRequest) => {
+export const activate = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const { isActive } = req.body
 
   const user = await User.query().findById(id)
   if (user.username === 'admin') throw new apiError('User ini tidak dapat di inaktivasi!', 400)
   const result = await user.$query().updateAndFetch({
-    isActive,
+    isActive: !user.isActive,
     username: user.username,
     name: user.name,
   })
@@ -138,7 +137,7 @@ export const createUser = wrapAsync(async (req: EGRequest) => {
 
 export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => {
   if (!req.file) throw new apiError('File tidak boleh kosong', 400)
-  const { id } = req.user
+  const id = req.isAdmin && req.params.id ? req.params.id : req.user.id
   const user = await User.query().findById(id)
   if (!user) throw new apiError(`User tidak ditemukan`, 404)
 
@@ -166,8 +165,12 @@ export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => 
 })
 
 export const getAvatar = async (req: EGRequest, res: Response) => {
-  const { filename } = req.params
-  const fm = await FileMeta.query().findOne({ filename })
+  const id = req.params?.id || req.user.id
+  const user = await User.query().findById(id)
+  if (!user) throw new apiError(`User dengan ID yang ditentukan tidak ditemukan`, 404)
+  if (!user.avatar) throw new apiError(`User dengan ID yang ditentukan tidak memiliki avatar`, 404)
+
+  const fm = await FileMeta.query().findOne({ filename: user.avatar })
   if (!fm) return res.status(404).send('File tidak ditemukan')
   res.setHeader('content-type', fm.mimetype)
   fs.createReadStream(path.resolve(fm.path)).pipe(res)
