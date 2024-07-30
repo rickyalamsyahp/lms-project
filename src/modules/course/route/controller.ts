@@ -67,7 +67,7 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 
 export const update = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const { title, description } = req.body
+  const { title, description, level } = req.body
   const item = await Item.query().findById(id)
   if (!item) throw new apiError('Modul dengan ID yang ditentukan tidak ditemukan', 404)
   const result = await Item.transaction(async (trx) => {
@@ -86,6 +86,7 @@ export const update = wrapAsync(async (req: EGRequest) => {
     const result = await Item.query(trx).patchAndFetchById(id, {
       title,
       description,
+      level,
       filename: req.file?.filename,
       published: item.published,
       publishedAt: item.publishedAt,
