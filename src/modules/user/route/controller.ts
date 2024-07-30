@@ -35,6 +35,7 @@ export const getUserByScope = wrapAsync(async (req: EGRequest) => {
       })
       .page(Number(page) - 1, Number(size))
       .orderBy(orderBy as ColumnRef, order as OrderByDirection)
+      .withGraphJoined('bio')
   )
   return result
 })
