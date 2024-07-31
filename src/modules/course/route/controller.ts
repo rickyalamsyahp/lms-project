@@ -26,7 +26,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { title, description } = req.body
+  const { title, description, level } = req.body
   const result = await Item.transaction(async (trx) => {
     if (req.file) {
       const { filename, originalname, encoding, mimetype, size } = req.file
@@ -43,6 +43,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
     const result = await Item.query(trx).insertGraphAndFetch({
       title,
       description,
+      level,
       filename: req.file?.filename,
       published: false,
       publishedAt: undefined,
