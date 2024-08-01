@@ -40,6 +40,7 @@ export const createSchemaCourse = async (knex: Knex) => {
         table.string('filename', 32).notNullable()
         table.boolean('published').defaultTo(false)
         table.timestamp('publishedAt').nullable()
+        table.string('publishedBy', 48)
         table.integer('level').defaultTo(1)
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
