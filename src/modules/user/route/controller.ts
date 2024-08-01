@@ -83,7 +83,7 @@ export const updateProfile = wrapAsync(async (req: EGRequest) => {
   const userBio = await UserBio.query().findOne({ userId: id })
   await User.transaction(async (trx) => {
     if (bio) {
-      const { born, gender, phoneNumber, identityNumber } = bio
+      const { born, gender, phoneNumber, identityNumber, position } = bio
       if (userBio)
         await UserBio.query(trx)
           .patch({
@@ -91,6 +91,7 @@ export const updateProfile = wrapAsync(async (req: EGRequest) => {
             phoneNumber,
             born,
             identityNumber,
+            position,
           })
           .where({ userId: id })
       else

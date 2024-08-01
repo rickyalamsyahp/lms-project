@@ -10,6 +10,7 @@ export default class UserBio extends objectionVisibility(Model) {
   gender: string
   phoneNumber: string
   identityNumber: string
+  position: string
   modifiedBy: string
   modifiedAt: Date
 
@@ -35,6 +36,7 @@ export const createSchema = async (knex: Knex) => {
         table.string('born', 10).nullable()
         table.string('phoneNumber', 16).nullable()
         table.string('identityNumber', 32).nullable()
+        table.string('position', 48).nullable()
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
         table.string('modifiedBy', 48)
 

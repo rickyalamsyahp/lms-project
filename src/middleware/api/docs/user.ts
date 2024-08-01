@@ -679,4 +679,6 @@ export default function userAPIDocs() {
  *              type: string
  *              example: 2000-10-01
  *              required: false
+ *            position:
+ *              type: string
  */
