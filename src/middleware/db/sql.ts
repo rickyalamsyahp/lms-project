@@ -35,9 +35,9 @@ export const sqlConnection = () =>
       await createSchemaScope(knexConnection)
       await createSchemaFilemeta(knexConnection)
       await createSchemaUser(knexConnection)
-      await createSchemaSubmission(knexConnection)
       await createSchemaCourse(knexConnection)
       await createSchemaCourseExam(knexConnection)
+      await createSchemaSubmission(knexConnection)
       // End of create table
       resolve(knexConnection)
     } catch (error) {

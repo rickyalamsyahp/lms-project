@@ -13,6 +13,7 @@ export const adminRoute = () => {
   router.get('/:id', ctrl.getById)
   router.put('/:id', multer({ dest: uploadDest }).single('file'), ctrl.update)
   router.delete('/:id', ctrl.remove)
+  router.get('/:id/download', ctrl.downloadFile)
   router.put('/:id/publish', ctrl.publish)
   return router
 }

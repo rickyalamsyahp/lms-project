@@ -26,7 +26,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { title, description } = req.body
+  const { title, description, level } = req.body
   const result = await Item.transaction(async (trx) => {
     if (req.file) {
       const { filename, originalname, encoding, mimetype, size } = req.file
@@ -43,6 +43,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
     const result = await Item.query(trx).insertGraphAndFetch({
       title,
       description,
+      level,
       filename: req.file?.filename,
       published: false,
       publishedAt: undefined,
@@ -67,7 +68,7 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 
 export const update = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const { title, description } = req.body
+  const { title, description, level } = req.body
   const item = await Item.query().findById(id)
   if (!item) throw new apiError('Modul dengan ID yang ditentukan tidak ditemukan', 404)
   const result = await Item.transaction(async (trx) => {
@@ -85,6 +86,7 @@ export const update = wrapAsync(async (req: EGRequest) => {
 
     const result = await Item.query(trx).patchAndFetchById(id, {
       title,
+      level,
       description,
       filename: req.file?.filename,
       published: item.published,
@@ -112,7 +114,6 @@ export const publish = wrapAsync(async (req: EGRequest) => {
   const result = await item.$query().patchAndFetch({
     published: !item.published,
     publishedAt: new Date(),
-    publishedBy: req.user.id,
   })
 
   return result
@@ -127,6 +128,7 @@ export const downloadFile = async (req: EGRequest, res: Response) => {
   const fm = await FileMeta.query().findOne({ filename: mod.filename })
   if (!fm) return res.status(404).send('File tidak ditemukan')
   res.setHeader('content-type', fm.mimetype)
+  res.setHeader('Content-Disposition', `attachment; filename="${fm.originalname}"`)
   fs.createReadStream(path.resolve(fm.path)).pipe(res)
 }
 
