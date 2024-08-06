@@ -35,6 +35,7 @@ export const getUserByScope = wrapAsync(async (req: EGRequest) => {
       })
       .page(Number(page) - 1, Number(size))
       .orderBy(orderBy as ColumnRef, order as OrderByDirection)
+      .withGraphJoined('bio')
   )
   return result
 })
@@ -82,20 +83,23 @@ export const updateProfile = wrapAsync(async (req: EGRequest) => {
   const userBio = await UserBio.query().findOne({ userId: id })
   await User.transaction(async (trx) => {
     if (bio) {
-      const { position, officialCode, born } = bio
+      const { born, gender, phoneNumber, identityNumber, position } = bio
       if (userBio)
         await UserBio.query(trx)
           .patch({
-            position,
-            officialCode,
+            gender,
+            phoneNumber,
             born,
+            identityNumber,
+            position,
           })
           .where({ userId: id })
       else
         await UserBio.query(trx).insertGraph({
-          position,
-          officialCode,
+          gender,
+          phoneNumber,
           born,
+          identityNumber,
           userId: id,
         })
     }
@@ -186,6 +190,11 @@ export const remove = wrapAsync(async (req: EGRequest) => {
   if (!user) throw new apiError('User dengan id yang ditentukan tidak ditemukan atau merupakan akun yang dibuat system', 404)
   if (user.username === 'admin') throw new apiError('User ini tidak dapat dihapus!', 400)
 
-  await User.query().deleteById(id)
+  await User.transaction(async (trx) => {
+    await UserBio.query(trx).delete().where({ userId: id })
+    await User.query(trx).deleteById(id)
+    return
+  })
+
   return true
 })

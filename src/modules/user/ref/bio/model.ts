@@ -6,9 +6,11 @@ import { jsonProperties } from '@/constant'
 
 export default class UserBio extends objectionVisibility(Model) {
   userId: string
-  position: number
   born: string
-  officialCode: string
+  gender: string
+  phoneNumber: string
+  identityNumber: string
+  position: string
   modifiedBy: string
   modifiedAt: Date
 
@@ -19,6 +21,7 @@ export default class UserBio extends objectionVisibility(Model) {
     required: ['userId'],
     properties: {
       born: jsonProperties.localeDate,
+      gender: { type: 'string', enum: ['male', 'female'] },
     },
   }
 }
@@ -29,9 +32,11 @@ export const createSchema = async (knex: Knex) => {
       await knex.schema.createTable(UserBio.tableName, (table) => {
         table.increments()
         table.string('userId').notNullable().unique().index(`${UserBio.tableName}_user_id`)
-        table.string('position', 160).nullable()
+        table.string('gender', 16).nullable()
         table.string('born', 10).nullable()
-        table.string('officialCode', 16).nullable()
+        table.string('phoneNumber', 16).nullable()
+        table.string('identityNumber', 32).nullable()
+        table.string('position', 48).nullable()
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
         table.string('modifiedBy', 48)
 

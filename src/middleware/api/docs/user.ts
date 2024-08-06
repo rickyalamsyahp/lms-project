@@ -663,17 +663,9 @@ export default function userAPIDocs() {
  *        bio:
  *          type: object
  *          properties:
- *            address:
+ *            gender:
  *              type: string
- *              example: Jl Raya 12
- *              required: false
- *            lat:
- *              type: string
- *              example: -6.914744
- *              required: false
- *            long:
- *              type: string
- *              example: 107.609810
+ *              example: male or female
  *              required: false
  *            phoneNumber:
  *              type: string
@@ -687,4 +679,6 @@ export default function userAPIDocs() {
  *              type: string
  *              example: 2000-10-01
  *              required: false
+ *            position:
+ *              type: string
  */

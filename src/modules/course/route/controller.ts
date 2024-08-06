@@ -88,6 +88,7 @@ export const update = wrapAsync(async (req: EGRequest) => {
       title,
       level,
       description,
+      level,
       filename: req.file?.filename,
       published: item.published,
       publishedAt: item.publishedAt,
