@@ -120,6 +120,20 @@ export default function courseAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *  /admin/course/{id}/download:
+ *    get:
+ *      tags:
+ *        - Course - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID module
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**

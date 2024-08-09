@@ -86,7 +86,6 @@ export const update = wrapAsync(async (req: EGRequest) => {
 
     const result = await Item.query(trx).patchAndFetchById(id, {
       title,
-      level,
       description,
       level,
       filename: req.file?.filename,
