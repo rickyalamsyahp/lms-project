@@ -16,7 +16,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
 
   if (!req.isAdmin) itemQuery.where({ createdBy: req.user.id })
-  const result = await findQuery(Item).build(query, itemQuery)
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('courseExam').withGraphJoined('course')
 
   return result
 })
@@ -61,7 +61,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id).withGraphJoined('exam')
+  const result = await Item.query().findById(id).withGraphJoined('exam').withGraphJoined('course')
   if (!result) throw new apiError('Item dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })

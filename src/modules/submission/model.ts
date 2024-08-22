@@ -66,7 +66,7 @@ export default class Submission extends objectionVisibility(Model) {
       },
     },
     course: {
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       modelClass: Course,
       join: {
         from: `${this.tableName}.courseId`,
@@ -74,7 +74,7 @@ export default class Submission extends objectionVisibility(Model) {
       },
     },
     courseExam: {
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       modelClass: CourseExam,
       join: {
         from: `${this.tableName}.courseExamId`,

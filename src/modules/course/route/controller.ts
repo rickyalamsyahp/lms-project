@@ -172,7 +172,7 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
     : null
 
   return {
-    submisison: {
+    submission: {
       total: Number(totalSubmission?.count),
       ongoing: Number(ongoingSubmission?.count),
       finished: Number(finishedSubmission?.count),
@@ -180,7 +180,7 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
     },
     avgScore: avgScore?.avg,
     latestScore: latestScore?.score,
-    hasFinished: latestScore ? true : false,
+    hasFinished: totalCourseExam?.count === totalFinishedCourseExam?.count ? true : false,
     progress: userId
       ? {
           totalExam: totalCourseExam?.count,

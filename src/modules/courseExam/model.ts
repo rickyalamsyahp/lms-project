@@ -32,7 +32,7 @@ export default class CourseExam extends objectionVisibility(Model) {
 
   static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
     course: {
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       modelClass: Course,
       join: {
         from: `${this.tableName}.courseId`,
