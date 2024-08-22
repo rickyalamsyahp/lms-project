@@ -16,7 +16,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
 
   if (!req.isAdmin) itemQuery.where({ createdBy: req.user.id })
-  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('courseExam').withGraphJoined('course')
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('courseExam').withGraphJoined('course').withGraphJoined('trainee')
 
   return result
 })

@@ -14,6 +14,7 @@ export default class CourseExam extends objectionVisibility(Model) {
   filename: string
 
   course: Course
+  fileMeta: FileMeta
 
   createdBy: string
   createdAt: Date
@@ -37,6 +38,14 @@ export default class CourseExam extends objectionVisibility(Model) {
       join: {
         from: `${this.tableName}.courseId`,
         to: `${Course.tableName}.id`,
+      },
+    },
+    fileMeta: {
+      relation: Model.HasOneRelation,
+      modelClass: FileMeta,
+      join: {
+        from: `${this.tableName}.filename`,
+        to: `${FileMeta.tableName}.filename`,
       },
     },
   })

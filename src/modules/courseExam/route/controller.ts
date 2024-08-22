@@ -18,7 +18,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .page(Number(page) - 1, Number(size))
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
 
-  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('course')
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('course').withGraphJoined('fileMeta')
   return result
 })
 
@@ -53,7 +53,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id).withGraphJoined('course')
+  const result = await Item.query().findById(id).withGraphJoined('course').withGraphJoined('fileMeta')
   if (!result) throw new apiError('Pelatihan dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })

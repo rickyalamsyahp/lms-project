@@ -1,7 +1,8 @@
 import { Knex } from 'knex'
 import { Model, JSONSchema } from 'objection'
+import objectionVisibility from 'objection-visibility'
 
-export default class FileMeta extends Model {
+export default class FileMeta extends objectionVisibility(Model) {
   id!: number
   filename!: string
   originalname!: string
@@ -11,6 +12,7 @@ export default class FileMeta extends Model {
   path: string
 
   static tableName = 'file_meta'
+  static hidden = ['path']
   static jsonSchema: JSONSchema = {
     type: 'object',
     required: ['filename', 'originalname', 'mimetype', 'size'],

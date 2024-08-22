@@ -21,7 +21,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
 
   if (!req.isAdmin) itemQuery.where({ published: true })
 
-  const result = await findQuery(Item).build(query, itemQuery)
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('fileMeta')
   return result
 })
 
@@ -62,6 +62,7 @@ export const getById = wrapAsync(async (req: EGRequest) => {
   const result = await Item.query()
     .findById(id)
     .where(req.isAdmin ? {} : { published: true })
+    .withGraphJoined('fileMeta')
   if (!result) throw new apiError('Modul dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })

@@ -4,6 +4,7 @@ import route from '@/modules/route/route'
 import * as submission from '@/modules/submission/route'
 import * as courseApi from '@/modules/course/route'
 import * as courseExamApi from '@/modules/courseExam/route'
+import * as fileMeta from '@/modules/fileMeta/route'
 
 import { isAuthenticated } from '@/modules/auth/service'
 import { Express } from 'express'
@@ -25,6 +26,7 @@ type Route = {
 
 const apis: Route[] = [
   { baseUrl: '', path: '/auth', source: auth, docs: authAPIDocs },
+  { baseUrl: '', path: '/file', source: fileMeta.publicRoute },
   { baseUrl: '/open', path: '/user-account', source: user.openRoute },
 
   { baseUrl: '', path: '/my-profile', source: user.myProfile, scopes: [], docs: userAPIDocs },
