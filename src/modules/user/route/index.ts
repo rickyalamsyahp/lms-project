@@ -52,7 +52,7 @@ export const publicRoute = () => {
 
 export const openRoute = () => {
   const router: Router = Router()
-  router.get('/:id/avatar/:filename', ctrl.getAvatar)
+  router.get('/:id/avatar', ctrl.getAvatar)
 
   return router
 }

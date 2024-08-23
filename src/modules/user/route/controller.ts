@@ -65,7 +65,7 @@ export const changePassword = wrapAsync(async (req: EGRequest) => {
 
 export const getProfile = wrapAsync(async (req: EGRequest) => {
   const { id } = req.user
-  const result = await User.query().findById(id)
+  const result = await User.query().findById(id).withGraphJoined('bio')
   if (!result) throw new apiError('Profil tidak ditemukan', 404)
   return result
 })
@@ -171,8 +171,8 @@ export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => 
 export const getAvatar = async (req: EGRequest, res: Response) => {
   const id = req.params?.id || req.user.id
   const user = await User.query().findById(id)
-  if (!user) throw new apiError(`User dengan ID yang ditentukan tidak ditemukan`, 404)
-  if (!user.avatar) throw new apiError(`User dengan ID yang ditentukan tidak memiliki avatar`, 404)
+  if (!user) return res.status(404).send(`User dengan ID yang ditentukan tidak ditemukan`)
+  if (!user.avatar) return res.status(404).send(`User dengan ID yang ditentukan tidak memiliki avatar`)
 
   const fm = await FileMeta.query().findOne({ filename: user.avatar })
   if (!fm) return res.status(404).send('File tidak ditemukan')
