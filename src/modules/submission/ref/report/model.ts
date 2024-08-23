@@ -24,7 +24,7 @@ export default class Report extends objectionVisibility(Model) {
   static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
     fileMeta: {
       relation: Model.HasOneRelation,
-      modelClass: Submission,
+      modelClass: FileMeta,
       join: {
         from: `${this.tableName}.filename`,
         to: `${FileMeta.tableName}.filename`,

@@ -47,5 +47,9 @@ export const instructorRoute = () => {
 export const publicRoute = () => {
   const router: Router = Router()
   router.get('/', ctrl.index)
+  router.get('/:submissionId/report', reportCtrl.index)
+  router.get('/:submissionId/report/:id', isSubmissionCreator(), reportCtrl.download)
+  router.get('/:submissionId/log', logCtrl.index)
+  router.get('/:submissionId/log/:id', isSubmissionCreator(), logCtrl.download)
   return router
 }
