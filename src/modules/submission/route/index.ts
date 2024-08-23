@@ -46,5 +46,6 @@ export const instructorRoute = () => {
 
 export const publicRoute = () => {
   const router: Router = Router()
+  router.get('/', ctrl.index)
   return router
 }
