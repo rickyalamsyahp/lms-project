@@ -38,6 +38,7 @@ export const instructorRoute = () => {
   router.get(`/:id`, ctrl.getById)
   router.put('/:id', ctrl.updateProfile)
   router.delete(`/:id`, ctrl.remove)
+  router.put(`/:id/activate`, ctrl.activate)
   router.put('/:id/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
 
   return router
