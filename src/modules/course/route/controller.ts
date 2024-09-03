@@ -172,6 +172,9 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
         .first()
     : null
 
+  const totalFinishedCourseExamCount = Number(totalFinishedCourseExam?.count)
+  const totalCourseExamCount = Number(totalCourseExam.count)
+
   return {
     submission: {
       total: Number(totalSubmission?.count),
@@ -181,12 +184,12 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
     },
     avgScore: avgScore?.avg,
     latestScore: latestScore?.score,
-    hasFinished: totalFinishedCourseExam?.count > 1 && totalCourseExam?.count === totalFinishedCourseExam?.count ? true : false,
+    hasFinished: totalFinishedCourseExamCount > 1 && totalCourseExamCount === totalFinishedCourseExamCount ? true : false,
     progress: userId
       ? {
-          totalExam: totalCourseExam?.count,
-          totalFinishedExam: totalFinishedCourseExam?.count,
-          percentage: Math.round((totalFinishedCourseExam?.count / totalCourseExam?.count) * 100),
+          totalExam: totalCourseExamCount,
+          totalFinishedExam: totalFinishedCourseExamCount,
+          percentage: Math.round((totalFinishedCourseExamCount / totalCourseExamCount) * 100),
         }
       : undefined,
   }
