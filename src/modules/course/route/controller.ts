@@ -184,7 +184,7 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
     },
     avgScore: avgScore?.avg,
     latestScore: latestScore?.score,
-    hasFinished: totalFinishedCourseExamCount > 0 && totalCourseExamCount === totalFinishedCourseExamCount ? true : false,
+    hasFinished: totalCourseExamCount > 0 && totalCourseExamCount === totalFinishedCourseExamCount ? true : false,
     progress: userId
       ? {
           totalExam: totalCourseExamCount,
