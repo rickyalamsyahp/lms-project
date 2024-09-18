@@ -8,6 +8,7 @@ import { createSchema as createSchemaSubmission } from '@/modules/submission/mod
 import { CREATE_TABLE, PG_DATABASE, PG_HOST, PG_PASSWORD, PG_PORT, PG_USER, PG_VERSION } from '@/constant/env'
 import { createSchemaCourse } from '@/modules/course/model'
 import { createSchemaCourseExam } from '@/modules/courseExam/model'
+import { createSchemaCourseSetting } from '@/modules/courseSetting/model'
 
 export const sqlConnection = () =>
   new Promise(async (resolve, reject) => {
@@ -37,6 +38,7 @@ export const sqlConnection = () =>
       await createSchemaUser(knexConnection)
       await createSchemaCourse(knexConnection)
       await createSchemaCourseExam(knexConnection)
+      await createSchemaCourseSetting(knexConnection)
       await createSchemaSubmission(knexConnection)
       // End of create table
       resolve(knexConnection)
