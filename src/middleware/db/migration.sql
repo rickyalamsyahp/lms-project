@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS public."submission-log" ADD COLUMN is_external_file boolean DEFAULT False;
