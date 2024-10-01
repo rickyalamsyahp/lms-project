@@ -16,13 +16,14 @@ const getReplayPath = (tag: string, filename: string) => {
 }
 
 export const index = wrapAsync(async (req: EGRequest) => {
-  const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', submissionId, ...query } = req.query
+  const { submissionId } = req.params
+  const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
 
   const itemQuery = Item.query()
     .page(Number(page) - 1, Number(size))
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
+    .where({ submissionId })
 
-  if (submissionId) itemQuery.where({ submissionId })
   if (!req.isAdmin) itemQuery.andWhere({ createdBy: req.user.id })
   const result = await findQuery(Item).build(query, itemQuery)
 
