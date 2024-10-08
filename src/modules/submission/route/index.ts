@@ -28,6 +28,7 @@ export const instructorRoute = () => {
   router.post('/', ctrl.create)
   router.get('/:id', ctrl.getById)
   router.delete('/:id', ctrl.remove)
+  router.delete('/user/:userId', ctrl.removeAll)
 
   router.put('/:id/cancel', isSubmissionCreator('id'), ctrl.cancel)
   router.put('/:id/finish', isSubmissionCreator('id'), ctrl.finish)

@@ -568,6 +568,20 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *  /instructor/submission/user/{userId}:
+ *    delete:
+ *      description: remove all submission
+ *      tags:
+ *        - Submission - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: userId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**

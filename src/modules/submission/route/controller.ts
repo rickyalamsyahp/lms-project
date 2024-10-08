@@ -7,6 +7,8 @@ import { apiError } from '@/libs/apiError'
 import User from '@/modules/user/model'
 import { ScopeSlug } from '@/modules/scope/model'
 import SubmissionExam from '../ref/exam/model'
+import SubmissionReport from '../ref/report/model'
+import SubmissionLog from '../ref/log/model'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -72,6 +74,21 @@ export const remove = wrapAsync(async (req: EGRequest) => {
   const result = await Item.query().deleteById(id).whereIn('status', [SubmissionStatus.CANCELED])
   if (!result) throw new apiError('Item dengan ID yang ditentukan tidak ditemukan', 404)
   return true
+})
+
+export const removeAll = wrapAsync(async (req: EGRequest) => {
+  const { userId } = req.params
+  const submissionList = await Item.query().where({ owner: userId })
+  if (submissionList.length === 0) throw new apiError(`Tidak ada submission yang terdaftar`, 404)
+
+  const result = await Item.transaction(async (trx) => {
+    const submissionIds = submissionList.map((d) => d.id)
+    await SubmissionReport.query(trx).delete().whereIn('submissionId', submissionIds)
+    await SubmissionLog.query(trx).delete().whereIn('submissionId', submissionIds)
+    const result = await Item.query(trx).delete().whereIn('id', submissionIds)
+    return result
+  })
+  return result
 })
 
 export const cancel = wrapAsync(async (req: EGRequest) => {
