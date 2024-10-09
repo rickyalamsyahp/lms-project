@@ -70,6 +70,20 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *  /admin/submission/user/{userId}:
+ *    delete:
+ *      description: remove all submission
+ *      tags:
+ *        - Submission - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: userId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**

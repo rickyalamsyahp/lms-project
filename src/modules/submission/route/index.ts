@@ -13,6 +13,8 @@ export const adminRoute = () => {
   const router: Router = Router()
   router.get('/', ctrl.index)
   router.get('/:id', ctrl.getById)
+  router.delete('/:id', ctrl.remove)
+  router.delete('/user/:userId', ctrl.removeAll)
 
   router.get('/:submissionId/log', logCtrl.index)
   router.get('/:submissionId/log/:id', isSubmissionCreator(), logCtrl.download)
