@@ -72,10 +72,10 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 export const remove = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
   const result = await Item.transaction(async (trx) => {
-    await SubmissionReport.query(trx).deleteById(id)
+    await SubmissionReport.query(trx).where({ submissionId: id })
     await SubmissionLog.query(trx).delete().where({ submissionId: id })
     await SubmissionExam.query(trx).delete().where({ submissionId: id })
-    const result = await Item.query(trx).delete().where({ submissionId: id })
+    const result = await Item.query(trx).deleteById(id)
     return result
   })
   return result
