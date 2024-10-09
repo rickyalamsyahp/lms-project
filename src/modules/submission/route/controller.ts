@@ -71,9 +71,14 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 
 export const remove = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().deleteById(id).whereIn('status', [SubmissionStatus.CANCELED])
-  if (!result) throw new apiError('Item dengan ID yang ditentukan tidak ditemukan', 404)
-  return true
+  const result = await Item.transaction(async (trx) => {
+    await SubmissionReport.query(trx).deleteById(id)
+    await SubmissionLog.query(trx).delete().where({ submissionId: id })
+    await SubmissionExam.query(trx).delete().where({ submissionId: id })
+    const result = await Item.query(trx).delete().where({ submissionId: id })
+    return result
+  })
+  return result
 })
 
 export const removeAll = wrapAsync(async (req: EGRequest) => {
