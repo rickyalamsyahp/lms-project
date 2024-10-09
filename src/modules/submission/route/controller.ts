@@ -85,6 +85,7 @@ export const removeAll = wrapAsync(async (req: EGRequest) => {
     const submissionIds = submissionList.map((d) => d.id)
     await SubmissionReport.query(trx).delete().whereIn('submissionId', submissionIds)
     await SubmissionLog.query(trx).delete().whereIn('submissionId', submissionIds)
+    await SubmissionExam.query(trx).delete().whereIn('submissionId', submissionIds)
     const result = await Item.query(trx).delete().whereIn('id', submissionIds)
     return result
   })
