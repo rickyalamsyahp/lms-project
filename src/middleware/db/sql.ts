@@ -9,6 +9,7 @@ import { CREATE_TABLE, PG_DATABASE, PG_HOST, PG_PASSWORD, PG_PORT, PG_USER, PG_V
 import { createSchemaCourse } from '@/modules/course/model'
 import { createSchemaCourseExam } from '@/modules/courseExam/model'
 import { createSchemaCourseSetting } from '@/modules/courseSetting/model'
+import { createSchemaLesson } from '@/modules/lesson/model'
 
 export const sqlConnection = () =>
   new Promise(async (resolve, reject) => {
@@ -40,6 +41,7 @@ export const sqlConnection = () =>
       await createSchemaCourseExam(knexConnection)
       await createSchemaCourseSetting(knexConnection)
       await createSchemaSubmission(knexConnection)
+      await createSchemaLesson(knexConnection)
       // End of create table
       resolve(knexConnection)
     } catch (error) {

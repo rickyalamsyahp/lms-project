@@ -31,7 +31,5 @@ export const publicRoute = () => {
   router.get('/', ctrl.index)
   router.get('/:id', ctrl.getById)
   router.get('/:id/download', ctrl.downloadFile)
-  router.get('/:id/stats', ctrl.getStatistic)
-  router.get('/:id/stats/:userId', ctrl.getStatistic)
   return router
 }

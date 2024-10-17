@@ -286,38 +286,6 @@ export default function lessonAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
- *  /public/lesson/{id}/stats:
- *    get:
- *      tags:
- *        - Lesson - Public
- *      security:
- *        - accessToken: []
- *      parameters:
- *        - name: id
- *          in: path
- *          description: ID module
- *          required: true
- *      responses:
- *        default:
- *          description: sukses
- *  /public/lesson/{id}/stats/{userId}:
- *    get:
- *      tags:
- *        - Lesson - Public
- *      security:
- *        - accessToken: []
- *      parameters:
- *        - name: id
- *          in: path
- *          description: ID course
- *          required: true
- *        - name: userId
- *          description: ID user
- *          in: path
- *          required: true
- *      responses:
- *        default:
- *          description: sukses
  */
 
 /**
