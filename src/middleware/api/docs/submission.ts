@@ -70,6 +70,20 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *  /admin/submission/user/{userId}:
+ *    delete:
+ *      description: remove all submission
+ *      tags:
+ *        - Submission - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: userId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**
@@ -422,6 +436,9 @@ export default function submissoinAPIDocs() {
  *          multipart/form-data:
  *            schema:
  *              $ref: '#/components/schemas/SubmissionLog'
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/SubmissionLogExternal'
  *      responses:
  *        default:
  *          description: sukses
@@ -565,6 +582,20 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *  /instructor/submission/user/{userId}:
+ *    delete:
+ *      description: remove all submission
+ *      tags:
+ *        - Submission - Instructor
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: userId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**
@@ -613,6 +644,25 @@ export default function submissoinAPIDocs() {
  *          format: binary
  *        tag:
  *          type: string
+ *    SubmissionLogExternal:
+ *      type: object
+ *      required:
+ *        - tag
+ *      properties:
+ *        tag:
+ *          type: string
+ *          example: video or simulation
+ *        filename:
+ *          type: string
+ *          example: test.mp4
+ *        encoding:
+ *          type: string
+ *          example: 7bit
+ *        size:
+ *          type: number
+ *        mimetype:
+ *          type: string
+ *          example: video/mp4
  *    SubmissionReport:
  *      type: object
  *      required:

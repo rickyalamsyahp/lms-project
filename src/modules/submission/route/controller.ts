@@ -7,6 +7,8 @@ import { apiError } from '@/libs/apiError'
 import User from '@/modules/user/model'
 import { ScopeSlug } from '@/modules/scope/model'
 import SubmissionExam from '../ref/exam/model'
+import SubmissionReport from '../ref/report/model'
+import SubmissionLog from '../ref/log/model'
 
 export const index = wrapAsync(async (req: EGRequest) => {
   const { page = 1, size = 20, order = 'desc', orderBy = 'createdAt', ...query } = req.query
@@ -15,8 +17,9 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .page(Number(page) - 1, Number(size))
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
 
-  if (!req.isAdmin) itemQuery.where({ createdBy: req.user.id })
-  const result = await findQuery(Item).build(query, itemQuery)
+  // if (req.isInstructor) itemQuery.where({ createdBy: req.user.id })
+  if (req.isTrainee) itemQuery.where({ owner: req.user.id })
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('courseExam').withGraphJoined('course').withGraphJoined('trainee')
 
   return result
 })
@@ -61,16 +64,37 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id).withGraphJoined('exam')
+  const result = await Item.query().findById(id).withGraphJoined('exam').withGraphJoined('course')
   if (!result) throw new apiError('Item dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })
 
 export const remove = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().deleteById(id).whereIn('status', [SubmissionStatus.CANCELED])
-  if (!result) throw new apiError('Item dengan ID yang ditentukan tidak ditemukan', 404)
-  return true
+  const result = await Item.transaction(async (trx) => {
+    await SubmissionReport.query(trx).delete().where({ submissionId: id })
+    await SubmissionLog.query(trx).delete().where({ submissionId: id })
+    await SubmissionExam.query(trx).delete().where({ submissionId: id })
+    const result = await Item.query(trx).deleteById(id)
+    return result
+  })
+  return result
+})
+
+export const removeAll = wrapAsync(async (req: EGRequest) => {
+  const { userId } = req.params
+  const submissionList = await Item.query().where({ owner: userId })
+  if (submissionList.length === 0) throw new apiError(`Tidak ada submission yang terdaftar`, 404)
+
+  const result = await Item.transaction(async (trx) => {
+    const submissionIds = submissionList.map((d) => d.id)
+    await SubmissionReport.query(trx).delete().whereIn('submissionId', submissionIds)
+    await SubmissionLog.query(trx).delete().whereIn('submissionId', submissionIds)
+    await SubmissionExam.query(trx).delete().whereIn('submissionId', submissionIds)
+    const result = await Item.query(trx).delete().whereIn('id', submissionIds)
+    return result
+  })
+  return result
 })
 
 export const cancel = wrapAsync(async (req: EGRequest) => {

@@ -18,7 +18,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .page(Number(page) - 1, Number(size))
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
 
-  const result = await findQuery(Item).build(query, itemQuery)
+  const result = await findQuery(Item).build(query, itemQuery).withGraphJoined('course').withGraphJoined('fileMeta')
   return result
 })
 
@@ -53,7 +53,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
 export const getById = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const result = await Item.query().findById(id)
+  const result = await Item.query().findById(id).withGraphJoined('course').withGraphJoined('fileMeta')
   if (!result) throw new apiError('Pelatihan dengan id yang ditentukan tidak ditemukan', 404)
   return result
 })
@@ -115,31 +115,31 @@ export const downloadFile = async (req: EGRequest, res: Response) => {
 
 export const getStatistic = wrapAsync(async (req: EGRequest) => {
   const { id, userId } = req.params
-  const selector = userId ? { owner: userId } : {}
+  const selector = userId ? { owner: userId, courseExamId: id } : {}
 
   const item = await Item.query().findById(id)
   if (!item) throw new apiError('Pelatihan dengan ID yang ditentukan tidak ditemukan', 404)
 
   const totalSubmission: any = await Submission.query()
     .count()
-    .where({ ...selector, courseExamId: id })
+    .where({ ...selector })
     .first()
   const ongoingSubmission: any = await Submission.query()
     .count()
-    .where({ ...selector, courseExamId: id, status: SubmissionStatus.ACTIVE })
+    .where({ ...selector, status: SubmissionStatus.ACTIVE })
     .first()
   const finishedSubmission: any = await Submission.query()
     .count()
-    .where({ ...selector, courseExamId: id, status: SubmissionStatus.FINISHED })
+    .where({ ...selector, status: SubmissionStatus.FINISHED })
     .first()
   const canceledSubmission: any = await Submission.query()
     .count()
-    .where({ ...selector, courseExamId: id, status: SubmissionStatus.CANCELED })
+    .where({ ...selector, status: SubmissionStatus.CANCELED })
     .first()
 
   const avgScore: any = await Submission.query()
     .avg('score')
-    .where({ ...selector, courseExamId: id, status: SubmissionStatus.FINISHED })
+    .where({ ...selector, status: SubmissionStatus.FINISHED })
     .first()
 
   const latestScore: any = userId
@@ -149,14 +149,14 @@ export const getStatistic = wrapAsync(async (req: EGRequest) => {
     : null
 
   return {
-    submisison: {
+    submission: {
       total: Number(totalSubmission?.count),
       ongoing: Number(ongoingSubmission?.count),
       finished: Number(finishedSubmission?.count),
       canceled: Number(canceledSubmission?.count),
     },
     avgScore: avgScore?.avg,
-    latestScore: latestScore?.score,
+    latestScore: latestScore?.score || null,
     hasFinished: userId ? (latestScore ? true : false) : undefined,
   }
 })

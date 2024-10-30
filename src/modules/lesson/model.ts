@@ -1,24 +1,33 @@
 import { Model, JSONSchema, RelationMappings, RelationMappingsThunk } from 'objection'
 import { Knex } from 'knex'
 import objectionVisibility from 'objection-visibility'
-import Submission from '../../model'
-import FileMeta from '@/modules/fileMeta/model'
+import FileMeta from '../fileMeta/model'
 
-export default class Report extends objectionVisibility(Model) {
+export default class Lesson extends objectionVisibility(Model) {
   id: number
-  submissionId: number
   filename: string
-  tag: string
-  createdBy: string
-  createdAt: Date
+  title: string
+  description: string
+
+  published: boolean
+  publishedAt: Date
+  publishedBy: string
 
   fileMeta: FileMeta
 
-  static tableName = 'submission-report'
+  createdBy: string
+  createdAt: Date
+  modifiedBy: string
+  modifiedAt: Date
+
+  static tableName = 'lesson'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['submissionId', 'filename'],
+    required: ['title', 'filename'],
+    properties: {
+      title: { type: 'string' },
+    },
   }
 
   static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
@@ -33,20 +42,22 @@ export default class Report extends objectionVisibility(Model) {
   })
 }
 
-export const createSchema = async (knex: Knex) => {
+export const createSchemaLesson = async (knex: Knex) => {
   try {
-    if (!(await knex.schema.hasTable(Report.tableName))) {
-      await knex.schema.createTable(Report.tableName, (table) => {
+    if (!(await knex.schema.hasTable(Lesson.tableName))) {
+      await knex.schema.createTable(Lesson.tableName, (table) => {
         table.increments()
-        table.integer('submissionId').notNullable().index(`${Report.tableName}_submission_id`)
+        table.string('title', 160).notNullable().index(`${Lesson.tableName}_title`)
+        table.text('description').nullable()
         table.string('filename', 32).notNullable()
-        table.string('tag', 32).nullable().index(`${Report.tableName}_tag`)
+        table.boolean('published').defaultTo(false)
+        table.timestamp('publishedAt').nullable()
+        table.string('publishedBy', 48)
         table.timestamp('createdAt').defaultTo(knex.fn.now())
-        table.string('createdBy', 48)
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
+        table.string('createdBy', 48)
         table.string('modifiedBy', 48)
 
-        table.foreign('submissionId').references('id').inTable(Submission.tableName)
         table.foreign('filename').references('filename').inTable(FileMeta.tableName)
       })
     }

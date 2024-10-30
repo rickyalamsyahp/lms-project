@@ -13,6 +13,8 @@ export const adminRoute = () => {
   const router: Router = Router()
   router.get('/', ctrl.index)
   router.get('/:id', ctrl.getById)
+  router.delete('/:id', ctrl.remove)
+  router.delete('/user/:userId', ctrl.removeAll)
 
   router.get('/:submissionId/log', logCtrl.index)
   router.get('/:submissionId/log/:id', isSubmissionCreator(), logCtrl.download)
@@ -28,6 +30,7 @@ export const instructorRoute = () => {
   router.post('/', ctrl.create)
   router.get('/:id', ctrl.getById)
   router.delete('/:id', ctrl.remove)
+  router.delete('/user/:userId', ctrl.removeAll)
 
   router.put('/:id/cancel', isSubmissionCreator('id'), ctrl.cancel)
   router.put('/:id/finish', isSubmissionCreator('id'), ctrl.finish)
@@ -46,5 +49,10 @@ export const instructorRoute = () => {
 
 export const publicRoute = () => {
   const router: Router = Router()
+  router.get('/', ctrl.index)
+  router.get('/:submissionId/report', reportCtrl.index)
+  router.get('/:submissionId/report/:id', isSubmissionCreator(), reportCtrl.download)
+  router.get('/:submissionId/log', logCtrl.index)
+  router.get('/:submissionId/log/:id', isSubmissionCreator(), logCtrl.download)
   return router
 }

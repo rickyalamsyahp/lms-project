@@ -11,6 +11,7 @@ export default class Log extends objectionVisibility(Model) {
   tag: string
   createdBy: string
   createdAt: Date
+  isExternalFile: boolean
 
   fileMeta: FileMeta
 
@@ -18,7 +19,7 @@ export default class Log extends objectionVisibility(Model) {
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['submissionId', 'filename'],
+    required: ['submissionId'],
   }
 
   static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
@@ -43,6 +44,7 @@ export const createSchema = async (knex: Knex) => {
         table.string('tag', 32).nullable().index(`${Log.tableName}_tag`)
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
+        table.boolean('isExternalFile').defaultTo(false)
 
         table.foreign('submissionId').references('id').inTable(Submission.tableName)
         table.foreign('filename').references('filename').inTable(FileMeta.tableName)

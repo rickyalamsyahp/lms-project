@@ -27,7 +27,9 @@ module.exports = {
         "SUBMISSION_LOG_STORAGE":"./tmp/submission/log",
         "SUBMISSION_REPORT_STORAGE":"./tmp/submission/report",
         "COURSE_STORAGE":"./tmp/module",
-        "API_GATEWAY":"http://localhost:9000"
+        "API_GATEWAY":"http://localhost:9000",
+        "REPLAY_BASE_URL_VIDEO":"./tmp/replay/video",
+        "REPLAY_BASE_URL_SIMULATION":"./tmp/replay/simulation",
       }
     }
   ]

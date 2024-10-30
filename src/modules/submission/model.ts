@@ -35,6 +35,7 @@ export default class Submission extends objectionVisibility(Model) {
   log: Log
   report: Report
   exam: SubmissionExam
+  trainee: User
 
   static tableName = 'submission'
 
@@ -66,7 +67,7 @@ export default class Submission extends objectionVisibility(Model) {
       },
     },
     course: {
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       modelClass: Course,
       join: {
         from: `${this.tableName}.courseId`,
@@ -74,7 +75,7 @@ export default class Submission extends objectionVisibility(Model) {
       },
     },
     courseExam: {
-      relation: Model.HasManyRelation,
+      relation: Model.HasOneRelation,
       modelClass: CourseExam,
       join: {
         from: `${this.tableName}.courseExamId`,
@@ -87,6 +88,14 @@ export default class Submission extends objectionVisibility(Model) {
       join: {
         from: `${this.tableName}.id`,
         to: `${SubmissionExam.tableName}.submissionId`,
+      },
+    },
+    trainee: {
+      relation: Model.HasOneRelation,
+      modelClass: User,
+      join: {
+        from: `${this.tableName}.owner`,
+        to: `${User.tableName}.id`,
       },
     },
   })

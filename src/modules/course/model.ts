@@ -1,4 +1,4 @@
-import { Model, JSONSchema } from 'objection'
+import { Model, JSONSchema, RelationMappings, RelationMappingsThunk } from 'objection'
 import { Knex } from 'knex'
 import objectionVisibility from 'objection-visibility'
 import FileMeta from '../fileMeta/model'
@@ -14,6 +14,8 @@ export default class Course extends objectionVisibility(Model) {
   publishedAt: Date
   publishedBy: string
 
+  fileMeta: FileMeta
+
   createdBy: string
   createdAt: Date
   modifiedBy: string
@@ -28,6 +30,17 @@ export default class Course extends objectionVisibility(Model) {
       title: { type: 'string' },
     },
   }
+
+  static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
+    fileMeta: {
+      relation: Model.HasOneRelation,
+      modelClass: FileMeta,
+      join: {
+        from: `${this.tableName}.filename`,
+        to: `${FileMeta.tableName}.filename`,
+      },
+    },
+  })
 }
 
 export const createSchemaCourse = async (knex: Knex) => {
