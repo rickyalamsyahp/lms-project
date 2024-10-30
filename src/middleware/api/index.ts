@@ -1,5 +1,7 @@
 import auth from '@/modules/auth/route'
 import * as user from '@/modules/user/route'
+
+import * as courseData from '@/modules/courseData/route'
 import route from '@/modules/route/route'
 import * as submission from '@/modules/submission/route'
 import * as courseApi from '@/modules/course/route'
@@ -26,7 +28,7 @@ type Route = {
 const apis: Route[] = [
   { baseUrl: '', path: '/auth', source: auth, docs: authAPIDocs },
   { baseUrl: '/open', path: '/user-account', source: user.openRoute },
-
+  { baseUrl: '', path: '/course-data', source: courseData.publicRouteCourseData },
   { baseUrl: '', path: '/my-profile', source: user.myProfile, scopes: [], docs: userAPIDocs },
   { baseUrl: '', path: '/route', source: route, scopes: [] },
 

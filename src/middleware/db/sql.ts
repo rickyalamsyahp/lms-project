@@ -2,6 +2,7 @@
 import knex from 'knex'
 import { Model, knexSnakeCaseMappers } from 'objection'
 import { createSchema as createSchemaScope } from '@/modules/scope/model'
+import { createSchemaCourseData } from '@/modules/courseData/model'
 import { createSchema as createSchemaFilemeta } from '@/modules/fileMeta/model'
 import { createSchema as createSchemaUser } from '@/modules/user/model'
 import { createSchema as createSchemaSubmission } from '@/modules/submission/model'
@@ -38,6 +39,7 @@ export const sqlConnection = () =>
       await createSchemaCourse(knexConnection)
       await createSchemaCourseExam(knexConnection)
       await createSchemaSubmission(knexConnection)
+      await createSchemaCourseData(knexConnection)
       // End of create table
       resolve(knexConnection)
     } catch (error) {
