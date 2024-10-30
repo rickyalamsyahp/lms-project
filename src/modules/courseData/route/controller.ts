@@ -12,7 +12,6 @@ export const index = wrapAsync(async () => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { pagi } = req.body
   const result = await CourseData.transaction(async (trx) => {
     if (req.file) {
       const { filename, originalname, encoding, mimetype, size } = req.file
@@ -27,7 +26,6 @@ export const create = wrapAsync(async (req: EGRequest) => {
     }
 
     const result = await CourseData.query(trx).insertGraphAndFetch({
-      pagi,
       filename: req.file?.filename,
       createdAt: new Date(),
       createdBy: req.user.id,
