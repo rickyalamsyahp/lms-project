@@ -23,6 +23,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
     .page(Number(page) - 1, Number(size))
     .orderBy(orderBy as ColumnRef, order as OrderByDirection)
     .where({ submissionId })
+    .withGraphJoined('fileMeta')
 
   if (!req.isAdmin) itemQuery.andWhere({ createdBy: req.user.id })
   const result = await findQuery(Item).build(query, itemQuery)
