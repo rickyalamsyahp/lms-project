@@ -10,7 +10,7 @@ export default class CouserData extends objectionVisibility(Model) {
   modifiedAt: Date
   modifiedBy: string
 
-  static tableName = 'courseData'
+  static tableName = 'course_data'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
