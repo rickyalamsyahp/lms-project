@@ -7,7 +7,7 @@ import { COURSE_STORAGE } from '@/constant/env'
 import FileMeta from '@/modules/fileMeta/model'
 
 export const index = wrapAsync(async () => {
-  const result = await CourseData.query()
+  const result = await CourseData.query().withGraphJoined('fileMeta')
   return result
 })
 
