@@ -22,7 +22,7 @@ export const createSchemaCourseData = async (knex: Knex) => {
   try {
     if (!(await knex.schema.hasTable(CouserData.tableName))) {
       await knex.schema.createTable(CouserData.tableName, (table) => {
-        table.string('filename', 32).notNullable()
+        table.string('filename', 32).nullable()
       })
     }
   } catch (error) {
