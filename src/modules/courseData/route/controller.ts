@@ -27,8 +27,6 @@ export const create = wrapAsync(async (req: EGRequest) => {
 
     const result = await CourseData.query(trx).insertGraphAndFetch({
       filename: req.file?.filename,
-      createdAt: new Date(),
-      createdBy: req.user.id,
     })
 
     return result
