@@ -12,7 +12,7 @@ export default class FileMeta extends objectionVisibility(Model) {
   path: string
 
   static tableName = 'file_meta'
-  static hidden = ['path']
+  static hidden = []
   static jsonSchema: JSONSchema = {
     type: 'object',
     required: ['filename', 'originalname', 'mimetype', 'size'],
