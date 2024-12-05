@@ -20,7 +20,7 @@ app.use(
   })
 )
 // Gunakan path UNC untuk shared folder
-app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Videos\\'))
+app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Videos'))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,
