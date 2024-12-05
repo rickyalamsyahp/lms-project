@@ -8,7 +8,7 @@ import api from './middleware/api'
 import { BODY_LIMIT, CORS_HEADERS, PORT } from './constant/env'
 import swagger from './middleware/swagger'
 import path from 'path'
-
+import fs from 'fs'
 const app = express()
 const server = http.createServer(app)
 
@@ -19,8 +19,16 @@ app.use(
     exposedHeaders: CORS_HEADERS?.split(','),
   })
 )
+
+fs.readdir('\\\\192.168.10.6\\Replays$\\Videos\\', (err, files) => {
+  if (err) {
+    console.error('Error accessing shared folder:', err)
+  } else {
+    console.log('Files in shared folder:', files)
+  }
+})
 // Gunakan path UNC untuk shared folder
-app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Videos'))
+app.use('/Replays', express.static(path.resolve('\\\\192.168.10.6\\Replays$\\Videos\\')))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,
