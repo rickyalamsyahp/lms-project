@@ -19,7 +19,8 @@ app.use(
     exposedHeaders: CORS_HEADERS?.split(','),
   })
 )
-app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Video'))
+// Gunakan path UNC untuk shared folder
+app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Videos\\'))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,
