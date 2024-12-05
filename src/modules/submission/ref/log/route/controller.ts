@@ -12,7 +12,9 @@ import { Response } from 'express'
 import { REPLAY_BASE_URL_SIMULATION, REPLAY_BASE_URL_VIDEO, SUBMISSION_LOG_STORAGE } from '@/constant/env'
 
 const getReplayPath = (tag: string, filename: string) => {
-  return `${tag.toLowerCase() === 'video' ? REPLAY_BASE_URL_VIDEO : tag.toLowerCase() === 'simulation' ? REPLAY_BASE_URL_SIMULATION : ''}/${filename}`
+  return `${
+    tag.toLowerCase() === 'video' ? REPLAY_BASE_URL_VIDEO : tag.toLowerCase() === 'simulation' ? REPLAY_BASE_URL_SIMULATION : SUBMISSION_LOG_STORAGE
+  }/${filename}`
 }
 
 export const index = wrapAsync(async (req: EGRequest) => {
