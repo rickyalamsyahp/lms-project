@@ -7,6 +7,7 @@ import dbConnection from './middleware/db'
 import api from './middleware/api'
 import { BODY_LIMIT, CORS_HEADERS, PORT } from './constant/env'
 import swagger from './middleware/swagger'
+import path from 'path'
 
 const app = express()
 const server = http.createServer(app)
@@ -18,7 +19,7 @@ app.use(
     exposedHeaders: CORS_HEADERS?.split(','),
   })
 )
-
+app.use('/Replays', express.static(path.resolve('C:/Replays')))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,
