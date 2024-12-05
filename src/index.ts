@@ -19,7 +19,7 @@ app.use(
     exposedHeaders: CORS_HEADERS?.split(','),
   })
 )
-app.use('/Replays', express.static(path.resolve('C:/Replays/Videos')))
+app.use('/Replays', express.static('\\\\192.168.10.6\\Replays$\\Video'))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,
