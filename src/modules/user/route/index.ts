@@ -13,6 +13,7 @@ export const myProfile = () => {
   router.put('/', ctrl.updateProfile)
   router.get('/avatar', ctrl.getAvatar)
   router.put('/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
+  router.delete('/avatar', ctrl.removeAvatar)
   return router
 }
 
@@ -27,7 +28,7 @@ export const adminRoute = () => {
   router.put(`/:id/activate`, ctrl.activate)
   router.put(`/:id/change-password`, ctrl.changePassword)
   router.put('/:id/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
-
+  router.delete('/:id/avatar', ctrl.removeAvatar)
   return router
 }
 
@@ -40,7 +41,7 @@ export const instructorRoute = () => {
   router.delete(`/:id`, ctrl.remove)
   router.put(`/:id/activate`, ctrl.activate)
   router.put('/:id/avatar', multer({ dest: uploadDest }).single('file'), ctrl.changeAvatar)
-
+  router.delete('/:id/avatar', ctrl.removeAvatar)
   return router
 }
 

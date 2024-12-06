@@ -141,7 +141,7 @@ export const createUser = wrapAsync(async (req: EGRequest) => {
 
 export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => {
   if (!req.file) throw new apiError('File tidak boleh kosong', 400)
-  const id = req.isAdmin && req.params.id ? req.params.id : req.user.id
+  const id = (req.isAdmin || req.isInstructor) && req.params.id ? req.params.id : req.user.id
   const user = await User.query().findById(id)
   if (!user) throw new apiError(`User tidak ditemukan`, 404)
 
@@ -161,6 +161,38 @@ export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => 
     name,
     email,
     avatar: filename,
+    modifiedBy: id,
+    modifiedAt: new Date(),
+  })
+
+  return result
+})
+export const removeAvatar = wrapAsync(async (req: EGRequest) => {
+  const id = (req.isAdmin || req.isInstructor) && req.params.id ? req.params.id : req.user.id
+  const user = await User.query().findById(id)
+  console.log(user)
+
+  if (!user) throw new apiError('User tidak ditemukan', 404)
+
+  if (!user.avatar) throw new apiError('User tidak memiliki avatar untuk dihapus', 400)
+
+  // Hapus metadata file dari database
+  // await FileMeta.query().where('filename', user.avatar).delete()
+
+  // Hapus file fisik (opsional, tergantung implementasi penyimpanan Anda)
+  const filePath = `${PROFILE_PICTURE_STORAGE}/${user.avatar}`
+
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath) // Menghapus file avatar dari penyimpanan
+  }
+
+  // Update pengguna untuk menghapus referensi avatar
+  const { name, email, username } = user
+  const result = await user.$query().updateAndFetch({
+    username,
+    name,
+    email,
+    avatar: null,
     modifiedBy: id,
     modifiedAt: new Date(),
   })
