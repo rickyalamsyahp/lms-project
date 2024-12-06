@@ -20,13 +20,13 @@ app.use(
   })
 )
 
-fs.readdir('\\\\192.168.10.6\\Replays$\\Videos\\', (err, files) => {
-  if (err) {
-    console.error('Error accessing shared folder:', err)
-  } else {
-    console.log('Files in shared folder:', files)
-  }
-})
+// fs.readdir('\\\\192.168.10.6\\Replays$\\Videos\\', (err, files) => {
+//   if (err) {
+//     console.error('Error accessing shared folder:', err)
+//   } else {
+//     console.log('Files in shared folder:', files)
+//   }
+// })
 // Gunakan path UNC untuk shared folder
 app.use('/Replays', express.static(path.resolve('\\\\192.168.10.6\\Replays$\\Videos\\')))
 app.use(
