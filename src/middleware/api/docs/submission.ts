@@ -70,6 +70,21 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *    delete:
+ *      tags:
+ *        - Submission - Admin
+ *      security:
+ *        - accessToken: []
+ *        - apiKey: []
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: string
+ *      responses:
+ *        default:
+ *          description: sukses
  *  /admin/submission/user/{userId}:
  *    delete:
  *      description: remove all submission
@@ -158,6 +173,22 @@ export default function submissoinAPIDocs() {
  *      responses:
  *        default:
  *          description: sukses
+ *    delete:
+ *      description: remove report file
+ *      tags:
+ *        - Submission Report - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
  */
 
 /**
@@ -218,6 +249,22 @@ export default function submissoinAPIDocs() {
  *  /admin/submission/{submissionId}/log/{logId}:
  *    get:
  *      description: download log file
+ *      tags:
+ *        - Submission Log - Admin
+ *      security:
+ *        - accessToken: []
+ *      parameters:
+ *        - name: submissionId
+ *          in: path
+ *          required: true
+ *        - name: logId
+ *          in: path
+ *          required: true
+ *      responses:
+ *        default:
+ *          description: sukses
+ *    delete:
+ *      description: remove log file
  *      tags:
  *        - Submission Log - Admin
  *      security:
