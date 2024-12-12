@@ -218,7 +218,7 @@ export const remove = wrapAsync(async (req: EGRequest) => {
   const q = User.query().findById(id).andWhereNot({ createdBy: 'system' })
   console.log((await q));
   
-  if (!req.isAdmin || !req.isInstructor) q.where({ scope: ScopeSlug.TRAINEE })
+  // if (!req.isAdmin || !req.isInstructor) q.where({ scope: ScopeSlug.TRAINEE })
   const user = await q
 
   if (!user) throw new apiError('User dengan id yang ditentukan tidak ditemukan atau merupakan akun yang dibuat system', 404)
