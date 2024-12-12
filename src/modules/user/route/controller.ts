@@ -216,6 +216,8 @@ export const remove = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
 
   const q = User.query().findById(id).andWhereNot({ createdBy: 'system' })
+  console.log((await q));
+  
   if (!req.isAdmin || !req.isInstructor) q.where({ scope: ScopeSlug.TRAINEE })
   const user = await q
 
