@@ -18,12 +18,13 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { nama } = req.body
+  const { name } = req.body
   const result = await Item.transaction(async (trx) => {
+console.log(req.body);
 
 
     const result = await Item.query(trx).insertGraphAndFetch({
-      name: nama,
+      name: name,
       createdAt: new Date(),
       createdBy: req.user.id,
     })
@@ -44,14 +45,14 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 
 export const update = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const { nama } = req.body
+  const { name } = req.body
   const item = await Item.query().findById(id)
   if (!item) throw new apiError('Category  dengan ID yang ditentukan tidak ditemukan', 404)
   const result = await Item.transaction(async (trx) => {
   
 
     const result = await Item.query(trx).patchAndFetchById(id, {
-      name:nama,
+      name:name,
       modifiedBy: req.user.id,
       modifiedAt: new Date(),
     })

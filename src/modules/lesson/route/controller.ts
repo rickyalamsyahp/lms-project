@@ -24,7 +24,7 @@ export const index = wrapAsync(async (req: EGRequest) => {
 })
 
 export const create = wrapAsync(async (req: EGRequest) => {
-  const { title, description } = req.body
+  const { title, description, category } = req.body
   const result = await Item.transaction(async (trx) => {
     if (req.file) {
       const { filename, originalname, encoding, mimetype, size } = req.file
@@ -41,6 +41,7 @@ export const create = wrapAsync(async (req: EGRequest) => {
     const result = await Item.query(trx).insertGraphAndFetch({
       title,
       description,
+      category,
       filename: req.file?.filename,
       published: false,
       publishedAt: undefined,
@@ -66,7 +67,7 @@ export const getById = wrapAsync(async (req: EGRequest) => {
 
 export const update = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
-  const { title, description } = req.body
+  const { title, description, category } = req.body
   const item = await Item.query().findById(id)
   if (!item) throw new apiError('Modul dengan ID yang ditentukan tidak ditemukan', 404)
   const result = await Item.transaction(async (trx) => {
@@ -85,6 +86,7 @@ export const update = wrapAsync(async (req: EGRequest) => {
     const result = await Item.query(trx).patchAndFetchById(id, {
       title,
       description,
+      category,
       filename: req.file?.filename,
       published: item.published,
       publishedAt: item.publishedAt,

@@ -8,6 +8,7 @@ export default class Lesson extends objectionVisibility(Model) {
   filename: string
   title: string
   description: string
+  category?: string
 
   published: boolean
   publishedAt: Date
@@ -50,6 +51,7 @@ export const createSchemaLesson = async (knex: Knex) => {
         table.string('title', 160).notNullable().index(`${Lesson.tableName}_title`)
         table.text('description').nullable()
         table.string('filename', 32).notNullable()
+        table.string('category', 48)
         table.boolean('published').defaultTo(false)
         table.timestamp('publishedAt').nullable()
         table.string('publishedBy', 48)
