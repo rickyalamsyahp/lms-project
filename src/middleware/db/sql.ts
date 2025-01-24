@@ -11,6 +11,7 @@ import { createSchemaCourse } from '@/modules/course/model'
 import { createSchemaCourseExam } from '@/modules/courseExam/model'
 import { createSchemaCourseSetting } from '@/modules/courseSetting/model'
 import { createSchemaLesson } from '@/modules/lesson/model'
+import { createSchemaCategory } from '@/modules/category/model'
 
 export const sqlConnection = () =>
   new Promise(async (resolve, reject) => {
@@ -44,6 +45,7 @@ export const sqlConnection = () =>
       await createSchemaSubmission(knexConnection)
       await createSchemaCourseData(knexConnection)
       await createSchemaLesson(knexConnection)
+      await createSchemaCategory(knexConnection)
       // End of create table
       resolve(knexConnection)
     } catch (error) {

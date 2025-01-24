@@ -9,7 +9,7 @@ import * as courseExamApi from '@/modules/courseExam/route'
 import * as courseSettingApi from '@/modules/courseSetting/route'
 import * as fileMeta from '@/modules/fileMeta/route'
 import * as lessonApi from '@/modules/lesson/route'
-
+import * as CategoryApi from '@/modules/category/route'
 import { isAuthenticated } from '@/modules/auth/service'
 import { Express } from 'express'
 import { ScopeSlug } from '@/modules/scope/model'
@@ -51,6 +51,7 @@ const apis: Route[] = [
   { baseUrl: '/admin', path: '/course-exam', source: courseExamApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
   { baseUrl: '/admin', path: '/course-setting', source: courseSettingApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
   { baseUrl: '/admin', path: '/lesson', source: lessonApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
+  { baseUrl: '/admin', path: '/category', source: CategoryApi.adminRoute, scopes: [ScopeSlug.ADMIN] },
 
   { baseUrl: '/instructor', path: '/user-account', source: user.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
   { baseUrl: '/instructor', path: '/submission', source: submission.instructorRoute, scopes: [ScopeSlug.INSTRUCTOR] },
