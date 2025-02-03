@@ -10,10 +10,11 @@ export default class User extends objectionVisibility(Model) {
   id!: string
   name!: string
   username!: string
-  email!: string
+  email?: string
   isActive!: boolean
   scope?: ScopeSlug
   salt!: string
+  instansi?: string
   hashedPassword!: string
   createdAt: Date
   createdBy: string
@@ -34,6 +35,7 @@ export default class User extends objectionVisibility(Model) {
       name: { type: 'string', minLength: 3, maxLength: 48 },
       username: { type: 'string', minLength: 3, maxLength: 32 },
       email: { type: 'string', minLength: 8, maxLength: 72 },
+      instansi: { type: 'string', minLength: 3, maxLength: 72 },
     },
   }
 
@@ -56,7 +58,8 @@ export const createSchema = async (knex: Knex) => {
         table.string('id').notNullable().unique().index(`${User.tableName}_id`)
         table.string('name', 48).notNullable().index(`${User.tableName}_name`)
         table.string('username', 32).notNullable().unique().index(`${User.tableName}_username`)
-        table.string('email', 72).notNullable().unique().index(`${User.tableName}_email`)
+        table.string('email', 72).nullable().unique().index(`${User.tableName}_email`)
+        table.string('instansi', 72).nullable()
         table.string('scope').notNullable()
         table.boolean('is_active').defaultTo(false)
         table.string('salt', 120).notNullable()
