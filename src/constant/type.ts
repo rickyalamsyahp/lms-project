@@ -1,4 +1,3 @@
-import Submission from '@/modules/submission/model'
 import { Request } from 'express'
 
 export type EGUser = {
@@ -10,7 +9,6 @@ export type EGUser = {
 
 export type EGRequest = Request & {
   user: EGUser
-  submission?: Submission
   isAdmin?: boolean
   isInstructor?: boolean
   isTrainee?: boolean

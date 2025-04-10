@@ -1,54 +1,60 @@
 import { Model, JSONSchema, RelationMappings, RelationMappingsThunk } from 'objection'
-import Scope, { ScopeSlug } from '../scope/model'
+
 import { Knex } from 'knex'
 import { register } from '../auth/service'
 import objectionVisibility from 'objection-visibility'
 import FileMeta from '../fileMeta/model'
-import UserBio, { createSchema as createSchemaUserBio } from './ref/bio/model'
+import Teacher from '../teacher/model'
+import Student from '../student/model'
 
 export default class User extends objectionVisibility(Model) {
-  id!: string
-  name!: string
-  username!: string
-  email?: string
+  id: number
+  name: string
+  email: string
   isActive!: boolean
-  scope?: ScopeSlug
+  role: string
   salt!: string
-  instansi?: string
   hashedPassword!: string
+  avatar: string
+
   createdAt: Date
   createdBy: string
   modifiedAt: Date
   modifiedBy: string
-  avatar: string
-
-  bio: UserBio
 
   static tableName = 'user'
-  static hidden = ['hashedPassword', 'salt', 'scopeSlug']
-
+  static hidden = ['hashedPassword', 'salt']
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['username', 'name'],
+    required: ['name', 'email', 'password', 'role'],
     properties: {
-      id: { type: 'string' },
-      name: { type: 'string', minLength: 3, maxLength: 48 },
-      username: { type: 'string', minLength: 3, maxLength: 32 },
-      email: { type: 'string', minLength: 8, maxLength: 72 },
-      instansi: { type: 'string', minLength: 3, maxLength: 72 },
+      name: { type: 'string' },
+      email: { type: 'string' },
+      password: { type: 'string' },
+      role: { type: 'string', enum: ['admin', 'guru', 'siswa'] },
+      createdAt: { type: 'string', format: 'date-time' },
+      updatedAt: { type: 'string', format: 'date-time' },
     },
   }
 
-  static relationMappings: RelationMappings | RelationMappingsThunk = () => ({
-    bio: {
-      relation: Model.HasOneRelation,
-      modelClass: UserBio,
+  static relationMappings: RelationMappings | RelationMappingsThunk = {
+    teacher: {
+      relation: Model.HasManyRelation,
+      modelClass: Teacher,
       join: {
-        from: `${this.tableName}.id`,
-        to: `${UserBio.tableName}.userId`,
+        from: 'user.id',
+        to: 'teacher.userId',
       },
     },
-  })
+    student: {
+      relation: Model.HasManyRelation,
+      modelClass: Student,
+      join: {
+        from: 'user.id',
+        to: 'student.authorId',
+      },
+    },
+  }
 }
 
 export const createSchema = async (knex: Knex) => {
@@ -57,25 +63,20 @@ export const createSchema = async (knex: Knex) => {
       await knex.schema.createTable(User.tableName, (table) => {
         table.string('id').notNullable().unique().index(`${User.tableName}_id`)
         table.string('name', 48).notNullable().index(`${User.tableName}_name`)
-        table.string('username', 32).notNullable().unique().index(`${User.tableName}_username`)
         table.string('email', 72).nullable().unique().index(`${User.tableName}_email`)
-        table.string('instansi', 72).nullable()
-        table.string('scope').notNullable()
+        table.string('role', 72).nullable()
         table.boolean('is_active').defaultTo(false)
         table.string('salt', 120).notNullable()
         table.string('hashed_password', 120).notNullable()
-        table.string('avatar', 32).nullable()
+
         table.timestamp('createdAt').defaultTo(knex.fn.now())
         table.timestamp('modifiedAt').defaultTo(knex.fn.now())
         table.string('createdBy', 48)
         table.string('modifiedBy', 48)
-
-        table.foreign('scope').references('slug').inTable(Scope.tableName)
         table.foreign('avatar').references('filename').inTable(FileMeta.tableName)
       })
     }
 
-    await createSchemaUserBio(knex)
     await seed()
   } catch (error) {
     throw new Error(error)
@@ -90,26 +91,9 @@ export const seed = async () => {
   const users: any[] = [
     {
       name: 'Administrator',
-      username: 'admin',
       email: 'admin@mail.com',
       password: 'Admin!23@#',
-      scope: ScopeSlug.ADMIN,
-      createdBy: 'system',
-    },
-    {
-      name: 'Instructor',
-      username: 'instructor',
-      email: 'instructor@mail.com',
-      password: 'Instructor!23@#',
-      scope: ScopeSlug.INSTRUCTOR,
-      createdBy: 'system',
-    },
-    {
-      name: 'Trainee',
-      username: 'trainee',
-      email: 'trainee@mail.com',
-      password: 'Trainee!23@#',
-      scope: ScopeSlug.TRAINEE,
+      role: 'admin',
       createdBy: 'system',
     },
   ]

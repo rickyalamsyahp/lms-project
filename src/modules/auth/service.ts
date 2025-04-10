@@ -7,10 +7,7 @@ import jwtDecode from 'jwt-decode'
 import jwt, { SignOptions } from 'jsonwebtoken'
 import { v4 as uuidv4 } from 'uuid'
 import { apiError, errorHandler } from '@/libs/apiError'
-import { ScopeSlug } from '../scope/model'
-import Submission from '../submission/model'
 import { EGRequest } from '@/constant/type'
-import UserBio from '../user/ref/bio/model'
 import { JWT_EXPIRES_IN, JWT_SECRET } from '@/constant/env'
 
 type UserData = {
@@ -46,8 +43,8 @@ export const signToken = (user: User) => {
   return jwt.sign(
     {
       id: user.id,
-      scope: user.scope,
-      username: user.username,
+      scope: user.role,
+      name: user.name,
     },
     JWT_SECRET,
     jwtOptions
@@ -66,9 +63,6 @@ export const isAuthenticated = (scopes = []) => {
         const decoded: any = jwtDecode(accessToken)
         if (scopes.length > 0 && !scopes.includes(decoded.scope)) return res.status(403).send('Kamu tidak diperkenankan untuk mengakses')
         req.user = decoded
-        req.isAdmin = req.user.scope === ScopeSlug.ADMIN
-        req.isInstructor = req.user.scope === ScopeSlug.INSTRUCTOR
-        req.isTrainee = req.user.scope === ScopeSlug.TRAINEE
         next()
       })
     })
@@ -95,13 +89,13 @@ export const isAuthenticated = (scopes = []) => {
     })
 }
 
-export const register = async (userData: UserData, scope: ScopeSlug, isActive = false, bio?: any) => {
-  const { password, username, ...data } = userData
+export const register = async (userData: any, role, isActive = false) => {
+  const { password, email, ...data } = userData
 
   try {
     if (!password) throw new apiError('Password tidak boleh kosong', 400)
-    const exists = await User.query().where({ username }).first()
-    if (exists) throw new apiError(`User dengan username ${username} sudah ada`, 400)
+    const exists = await User.query().where({ email }).first()
+    if (exists) throw new apiError(`User dengan email ${email} sudah ada`, 400)
 
     const salt = makeSalt()
     const hashedPassword = encryptPassword(password, salt)
@@ -111,24 +105,16 @@ export const register = async (userData: UserData, scope: ScopeSlug, isActive = 
       const user = await User.query(trx).insertAndFetch({
         ...data,
         id,
-        username,
         salt,
-        scope,
+        role,
         hashedPassword,
         isActive,
       })
 
-      if (bio) {
-        await UserBio.query(trx).insertAndFetch({
-          ...bio,
-          userId: user.id,
-        })
-      }
-
       return
     })
 
-    const result = await User.query().findById(id).withGraphJoined('bio')
+    const result = await User.query().findById(id)
     return result
   } catch (error) {
     console.log(error)
@@ -146,22 +132,7 @@ export const changePassword = async (id: string, newPassword: string, oldPasswor
     hashedPassword,
     salt,
     name: user.name,
-    username: user.username,
   })
 
   return 'Password user berhasil diubah'
-}
-
-export const isSubmissionCreator = (keyName = 'submissionId') => {
-  return compose().use(async (req: EGRequest, res: Response, next: NextFunction) => {
-    const submissionId = req.params[keyName]
-    if (!submissionId) return res.status(400).send(`Submission ID harus disertakan`)
-
-    req.submission = await Submission.query().findById(submissionId)
-    if (!req.submission) return res.status(404).send('Submission dengan ID yang ditentukan tidak ditemukan')
-    if (!req.isAdmin && req.submission.createdBy !== req.user.id)
-      return res.status(400).send('Submission tidak ditemukan atau Anda bukan pembuat submission tersebut')
-
-    next()
-  })
 }

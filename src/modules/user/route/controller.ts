@@ -8,8 +8,7 @@ import path from 'path'
 import { Response } from 'express'
 import fs from 'fs'
 import FileMeta from '@/modules/fileMeta/model'
-import { ScopeSlug } from '@/modules/scope/model'
-import UserBio from '../ref/bio/model'
+
 import { PROFILE_PICTURE_STORAGE } from '@/constant/env'
 import { ColumnRef, OrderByDirection } from 'objection'
 
@@ -30,9 +29,6 @@ export const getUserByScope = wrapAsync(async (req: EGRequest) => {
   const result = await findQuery(User).build(
     query,
     User.query()
-      .where({
-        scope: req.isAdmin ? req.params.scope : ScopeSlug.TRAINEE,
-      })
       .page(Number(page) - 1, Number(size))
       .orderBy(orderBy as ColumnRef, order as OrderByDirection)
       .withGraphJoined('bio')
@@ -44,10 +40,9 @@ export const activate = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
 
   const user = await User.query().findById(id)
-  if (user.username === 'admin') throw new apiError('User ini tidak dapat di inaktivasi!', 400)
+  if (user.name === 'admin') throw new apiError('User ini tidak dapat di inaktivasi!', 400)
   const result = await user.$query().updateAndFetch({
     isActive: !user.isActive,
-    username: user.username,
     name: user.name,
   })
 
@@ -71,43 +66,17 @@ export const getProfile = wrapAsync(async (req: EGRequest) => {
 })
 
 export const updateProfile = wrapAsync(async (req: EGRequest) => {
-  const asOwner = req.params.id ? false : true
-  const id = asOwner ? req.user.id : req.params.id
+  const id = req.user.id
   const q = User.query().findById(id)
-  if (!asOwner && !req.isAdmin) q.where({ scope: ScopeSlug.TRAINEE })
   const user = await q
   if (!user) throw new apiError('User dengan id yang ditentukan tidak ditemukan', 404)
   if (user.createdBy === 'system') throw new apiError('User ini tidak dapat diubah!', 400)
 
-  const { name, email, username = req.user.username, bio } = req.body
-  const userBio = await UserBio.query().findOne({ userId: id })
+  const { name, email } = req.body
   await User.transaction(async (trx) => {
-    if (bio) {
-      const { born, gender, phoneNumber, identityNumber, position } = bio
-      if (userBio)
-        await UserBio.query(trx)
-          .patch({
-            gender,
-            phoneNumber,
-            born,
-            identityNumber,
-            position,
-          })
-          .where({ userId: id })
-      else
-        await UserBio.query(trx).insertGraph({
-          gender,
-          phoneNumber,
-          born,
-          identityNumber,
-          userId: id,
-        })
-    }
-
     await user.$query(trx).patchAndFetch({
       name,
       email,
-      username,
       modifiedBy: id,
       modifiedAt: new Date(),
     })
@@ -120,20 +89,18 @@ export const updateProfile = wrapAsync(async (req: EGRequest) => {
 })
 
 export const createUser = wrapAsync(async (req: EGRequest) => {
-  const { username, name, email, password, scope, bio } = req.body
+  const { name, email, password, role } = req.body
 
   const result = await register(
     {
-      username,
       name,
       email,
       password,
       createdBy: req.user.id,
       createdAt: new Date(),
     },
-    req.isInstructor ? ScopeSlug.TRAINEE : scope,
-    true,
-    bio
+    role,
+    true
   )
 
   return result
@@ -155,9 +122,8 @@ export const changeAvatar = wrapAsync(async (req: EGRequest & { file: any }) => 
     path: `${PROFILE_PICTURE_STORAGE}/${filename}`,
   })
 
-  const { name, email, username } = user
+  const { name, email } = user
   const result = await user.$query().updateAndFetch({
-    username,
     name,
     email,
     avatar: filename,
@@ -187,9 +153,8 @@ export const removeAvatar = wrapAsync(async (req: EGRequest) => {
   }
 
   // Update pengguna untuk menghapus referensi avatar
-  const { name, email, username } = user
+  const { name, email } = user
   const result = await user.$query().updateAndFetch({
-    username,
     name,
     email,
     avatar: null,
@@ -216,16 +181,15 @@ export const remove = wrapAsync(async (req: EGRequest) => {
   const { id } = req.params
 
   const q = User.query().findById(id).andWhereNot({ createdBy: 'system' })
-  console.log((await q));
-  
+  console.log(await q)
+
   // if (!req.isAdmin || !req.isInstructor) q.where({ scope: ScopeSlug.TRAINEE })
   const user = await q
 
   if (!user) throw new apiError('User dengan id yang ditentukan tidak ditemukan atau merupakan akun yang dibuat system', 404)
-  if (user.username === 'admin') throw new apiError('User ini tidak dapat dihapus!', 400)
+  if (user.role === 'admin') throw new apiError('User ini tidak dapat dihapus!', 400)
 
   await User.transaction(async (trx) => {
-    await UserBio.query(trx).delete().where({ userId: id })
     await User.query(trx).deleteById(id)
     return
   })
