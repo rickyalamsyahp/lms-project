@@ -1,26 +1,37 @@
-import wrapAsync from '@/libs/wrapAsync'
-import User from '@/modules/user/model'
-import { Request, Response } from 'express'
-import { authenticate, signToken } from '../service'
-import { apiError } from '@/libs/apiError'
-import { ScopeSlug } from '@/modules/scope/model'
-import { register } from '../service'
 import { COOKIE_MAX_AGE } from '@/constant/env'
+import { apiError } from '@/libs/apiError'
+import wrapAsync from '@/libs/wrapAsync'
+import Student from '@/modules/student/model'
+import Teacher from '@/modules/teacher/model'
+import { Request, Response } from 'express'
+import { signToken } from '../service'
+import { getDbConnection } from '@/middleware/db/sql'
+// import dbConnection from '@/middleware/db'
 
 export const signIn = wrapAsync(async (req: Request, res: Response) => {
-  const { username, password } = req.body
-  const user = await User.query().where({ username }).first()
-  if (!user) throw new apiError(`Username atau password tidak sesuai`, 400)
-  if (!user.isActive) throw new apiError('User tidak aktif. Silahkan hubungi administrator', 403)
+  const { nis, nisn, uidg, upwdg, thn_pelajaran } = req.body
+  if (!thn_pelajaran) throw new apiError('Tahun pelajaran wajib diisi', 400)
 
-  if (!authenticate(password, user.salt, user.hashedPassword)) throw new apiError('Username atau password tidak sesuai', 400)
+  const sql = await getDbConnection(thn_pelajaran)
+  // console.log(sql)
+
+  let user: any
+  if (nis && nisn) {
+    user = await Student.query().where({ nis, nisn }).first()
+    if (!user) throw new apiError(`data tidak sesuai`, 400)
+    user.role = 'siswa'
+  } else {
+    user = await Teacher.query().where({ uidg, upwdg }).first()
+    if (!user) throw new apiError(`data tidak sesuai`, 400)
+    user.role = 'guru'
+  }
 
   const accessToken = signToken(user)
   res.cookie('access-token', accessToken, { maxAge: Number(COOKIE_MAX_AGE), path: '/' })
-  return accessToken
+  return { accessToken, user, thn_pelajaran }
 })
 
-export const signUp = wrapAsync(async (req: Request) => {
-  const user: any = await register(req.body, ScopeSlug.TRAINEE, true)
-  return user
-})
+// export const signUp = wrapAsync(async (req: Request) => {
+//   const user: any = await register(req.body, ScopeSlug.ADMIN, true)
+//   return user
+// })

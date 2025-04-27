@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import * as ctrl from './controller'
 
-export default () => {
+export const publicRoute = () => {
   const router: Router = Router()
-  router.post('/authorize', ctrl.signIn)
+  router.get('/', ctrl.getIndex)
   return router
 }

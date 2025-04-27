@@ -1,27 +1,40 @@
+import objectionVisibility from 'objection-visibility'
 import Teacher from '../teacher/model'
-import Subject from '../subject/model'
 import Classroom from '../classroom/model'
 import { JSONSchema, Model, RelationMappings } from 'objection'
-
-export default class QuestionBank extends Model {
-  id: number
+import { Knex } from 'knex'
+import Matapelajaran from '../matapelajaran/model'
+import ExamResult from '../examResult/model'
+export default class QuestionBank extends objectionVisibility(Model) {
+  id: string
   teacherId: number
-  subjectId: number
+  mataPelajaranId: string
   classroomId: number
   title: string
-  scheduledAt: Date
+  scheduledAt: string
+  jamUjian: string
+  duration: number
+  semester: string
+
+  createdAt: Date
+  createdBy: string
+  modifiedAt: Date
+  modifiedBy: string
 
   static tableName = 'question_banks'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['teacherId', 'subjectId', 'classroomId', 'title'],
+    required: ['teacherId', 'mataPelajaranId', 'classroomId', 'title'],
     properties: {
       teacherId: { type: 'integer' },
-      subjectId: { type: 'integer' },
+      mataPelajaranId: { type: 'string' },
       classroomId: { type: 'integer' },
       title: { type: 'string' },
-      scheduledAt: { type: 'string', format: 'date-time' },
+      duration: { type: 'integer' },
+      semester: { type: 'string' },
+      scheduledAt: { type: 'string' },
+      jamUjian: { type: 'string' },
     },
   }
 
@@ -29,17 +42,46 @@ export default class QuestionBank extends Model {
     teacher: {
       relation: Model.BelongsToOneRelation,
       modelClass: Teacher,
-      join: { from: 'question_banks.teacherId', to: 'teachers.id' },
+      join: { from: 'question_banks.teacherId', to: `${Teacher.tableName}.kode` },
     },
     subject: {
       relation: Model.BelongsToOneRelation,
-      modelClass: Subject,
-      join: { from: 'question_banks.subjectId', to: 'subjects.id' },
+      modelClass: Matapelajaran,
+      join: { from: `${this.tableName}.mataPelajaranId`, to: `${Matapelajaran.tableName}.kode` },
     },
     classroom: {
       relation: Model.BelongsToOneRelation,
       modelClass: Classroom,
-      join: { from: 'question_banks.classroomId', to: 'classrooms.id' },
+      join: { from: 'question_banks.classroomId', to: `${Classroom.tableName}.kode` },
     },
+    result: {
+      relation: Model.BelongsToOneRelation,
+      modelClass: ExamResult,
+      join: { from: 'question_banks.id', to: `${ExamResult.tableName}.questionBankId` },
+    },
+  }
+}
+
+export const createSchemaBankSoal = async (knex: Knex) => {
+  try {
+    if (!(await knex.schema.hasTable(QuestionBank.tableName))) {
+      await knex.schema.createTable(QuestionBank.tableName, (table) => {
+        table.string('id').notNullable().unique().index(`${QuestionBank.tableName}_id`)
+        table.integer('teacherId', 72).notNullable()
+        table.string('mataPelajaranId', 72).notNullable()
+        table.integer('classroomId', 72).notNullable()
+        table.string('title', 120).notNullable()
+        table.integer('duration', 120).notNullable()
+        table.string('scheduledAt', 120).notNullable()
+        table.string('jamUjian', 120).notNullable()
+        table.string('semester', 120).notNullable()
+        table.timestamp('createdAt').defaultTo(knex.fn.now())
+        table.timestamp('modifiedAt').defaultTo(knex.fn.now())
+        table.string('createdBy', 48)
+        table.string('modifiedBy', 48)
+      })
+    }
+  } catch (error) {
+    throw new Error(error)
   }
 }

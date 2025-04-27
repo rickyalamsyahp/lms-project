@@ -1,41 +1,56 @@
+import objectionVisibility from 'objection-visibility'
 import { Model, JSONSchema, RelationMappings } from 'objection'
-import User from '../user/model'
-import Classroom from '../classroom/model'
+import { Knex } from 'knex'
 
-export default class Student extends Model {
-  id: number
-  userId: number
-  classroomId: number
-  name: string
-  nis: string
-  gender: 'L' | 'P'
-  address: string
-
-  static tableName = 'students'
+export default class Student extends objectionVisibility(Model) {
+  static tableName = 'siswa'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['userId', 'classroomId', 'name', 'nis'],
+    required: ['nisn', 'kode_kelas', 'nama'],
     properties: {
-      userId: { type: 'integer' },
-      classroomId: { type: 'integer' },
-      name: { type: 'string' },
       nis: { type: 'string' },
-      gender: { type: 'string', enum: ['L', 'P'] },
-      address: { type: 'string' },
-    },
-  }
-
-  static relationMappings: RelationMappings = {
-    user: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: User,
-      join: { from: 'students.userId', to: 'users.id' },
-    },
-    classroom: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: Classroom,
-      join: { from: 'students.classroomId', to: 'classrooms.id' },
+      nisn: { type: 'string' },
+      kode_kelas: { type: 'string' },
+      nama: { type: 'string' },
+      foto: { type: 'string' },
+      agama: { type: 'integer' },
+      sekolah_asal: { type: 'string' },
+      stb_sekolah_asal: { type: 'string' },
+      alamat_sekolah_asal: { type: 'string' },
+      tahun_sttb: { type: 'string' },
+      tahun_terima: { type: 'string' },
+      tanggal_terima: { type: 'string', format: 'date' },
+      kelas_terima: { type: 'integer' },
+      kota_lahir: { type: 'string' },
+      tanggal_lahir: { type: 'string', format: 'date' },
+      gender: { type: 'integer' },
+      alamat: { type: 'string' },
+      kelurahan: { type: 'string' },
+      kecamatan: { type: 'string' },
+      kota: { type: 'string' },
+      provinsi: { type: 'string' },
+      kodepos: { type: 'string' },
+      telepon: { type: 'string' },
+      mobile: { type: 'string' },
+      anakke: { type: 'integer' },
+      stat_keluarga: { type: 'string' },
+      semester_terima: { type: 'integer' },
+      pek_ayah: { type: 'string' },
+      pek_ibu: { type: 'string' },
+      pek_wali: { type: 'string' },
+      skhun_nomor: { type: 'string' },
+      skhun_tahun: { type: 'string' },
+      ayah: { type: 'string' },
+      ibu: { type: 'string' },
+      alamat_ortu: { type: 'string' },
+      telp_ortu: { type: 'string' },
+      wali: { type: 'string' },
+      alamat_wali: { type: 'string' },
+      telp_wali: { type: 'string' },
+      created_by: { type: 'string' },
+      created_time: { type: 'string', format: 'date-time' },
+      modified_time: { type: 'string', format: 'date-time' },
     },
   }
 }

@@ -1,59 +1,29 @@
-import { Model, JSONSchema, RelationMappings } from 'objection'
-import User from '../user/model'
-import Subject from '../subject/model'
-import Classroom from '../classroom/model'
+import { JSONSchema, Model } from 'objection'
+import objectionVisibility from 'objection-visibility'
 
-export default class Teacher extends Model {
-  id: number
-  userId: number
-  name: string
-  nip: string
-  gender: 'L' | 'P'
-  address: string
-
-  static tableName = 'teachers'
+export default class Teacher extends objectionVisibility(Model) {
+  static tableName = 'guru'
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: ['userId', 'name', 'nip'],
+    required: ['kode', 'name', 'nip'],
     properties: {
-      userId: { type: 'integer' },
-      name: { type: 'string' },
+      kode: { type: 'integer' },
+      nama: { type: 'string' },
       nip: { type: 'string' },
-      gender: { type: 'string', enum: ['L', 'P'] },
-      address: { type: 'string' },
-    },
-  }
-
-  static relationMappings: RelationMappings = {
-    user: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: User,
-      join: { from: 'teachers.userId', to: 'users.id' },
-    },
-    subjects: {
-      relation: Model.ManyToManyRelation,
-      modelClass: Subject,
-      join: {
-        from: 'teachers.id',
-        through: {
-          from: 'teacher_subjects.teacherId',
-          to: 'teacher_subjects.subjectId',
-        },
-        to: 'subjects.id',
-      },
-    },
-    classrooms: {
-      relation: Model.ManyToManyRelation,
-      modelClass: Classroom,
-      join: {
-        from: 'teachers.id',
-        through: {
-          from: 'teacher_classrooms.teacherId',
-          to: 'teacher_classrooms.classroomId',
-        },
-        to: 'classrooms.id',
-      },
+      skdmapel: { type: 'string' },
+      foto: { type: 'string' },
+      fotott: { type: 'integer' },
+      pwd: { type: 'string' },
+      uidg: { type: 'string' },
+      upwdg: { type: 'string' },
+      ulevelg: { type: 'string' },
+      alloweditmp: { type: 'integer' },
+      created_by: { type: 'string' },
+      created_time: { type: 'string', format: 'date-time' },
+      modified_by: { type: 'string' },
+      modified_time: { type: 'string', format: 'date-time' },
+      alloweditrkeg: { type: 'integer' },
     },
   }
 }

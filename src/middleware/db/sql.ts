@@ -1,54 +1,50 @@
-// import { tableNames } from '../../constant'
 import knex from 'knex'
 import { Model, knexSnakeCaseMappers } from 'objection'
-import { createSchema as createSchemaScope } from '@/modules/scope/model'
-import { createSchemaCourseData } from '@/modules/courseData/model'
-import { createSchema as createSchemaFilemeta } from '@/modules/fileMeta/model'
-import { createSchema as createSchemaUser } from '@/modules/user/model'
-import { createSchema as createSchemaSubmission } from '@/modules/submission/model'
-import { CREATE_TABLE, PG_DATABASE, PG_HOST, PG_PASSWORD, PG_PORT, PG_USER, PG_VERSION } from '@/constant/env'
-import { createSchemaCourse } from '@/modules/course/model'
-import { createSchemaCourseExam } from '@/modules/courseExam/model'
-import { createSchemaCourseSetting } from '@/modules/courseSetting/model'
-import { createSchemaLesson } from '@/modules/lesson/model'
-import { createSchemaCategory } from '@/modules/category/model'
+import { CREATE_TABLE } from '@/constant/env'
 
-export const sqlConnection = () =>
-  new Promise(async (resolve, reject) => {
-    console.log('knexConnection - make connection to knexConnection db')
-    const knexConnection = knex({
-      client: 'pg',
-      version: PG_VERSION,
-      connection: {
-        host: PG_HOST,
-        port: Number(PG_PORT),
-        user: PG_USER,
-        password: PG_PASSWORD,
-        database: PG_DATABASE,
-      },
-      ...knexSnakeCaseMappers(),
-    })
+import { createSchemaBankSoal } from '@/modules/bankSoal/model'
+import { createSchemaExamResult } from '@/modules/examResult/model'
+import { createSchemaAnswer } from '@/modules/answer/model'
+import { createSchemaQuestions } from '@/modules/question/model'
 
-    Model.knex(knexConnection)
-    console.log('knexConnection - successfully connected')
-    if (CREATE_TABLE !== '1') resolve(knexConnection)
+// Helper untuk generate nama database dari tahun pelajaran
+const getDbNameFromThnPelajaran = (thn_pelajaran: string): string => {
+  const dbSuffix = thn_pelajaran.replace('-', '')
+  return `eraporsmkn57_${dbSuffix}`
+}
 
-    try {
-      console.log('knexConnection - create table')
-      // Create table
-      await createSchemaScope(knexConnection)
-      await createSchemaFilemeta(knexConnection)
-      await createSchemaUser(knexConnection)
-      await createSchemaCourse(knexConnection)
-      await createSchemaCourseExam(knexConnection)
-      await createSchemaCourseSetting(knexConnection)
-      await createSchemaSubmission(knexConnection)
-      await createSchemaCourseData(knexConnection)
-      await createSchemaLesson(knexConnection)
-      await createSchemaCategory(knexConnection)
-      // End of create table
-      resolve(knexConnection)
-    } catch (error) {
-      reject(error)
-    }
+// Fungsi utama untuk buat koneksi DB
+export const getDbConnection = async (thn_pelajaran: string) => {
+  const databaseName = getDbNameFromThnPelajaran(thn_pelajaran)
+
+  const knexInstance = knex({
+    client: 'mysql2',
+    connection: {
+      host: 'localhost',
+      port: 3306,
+      user: 'root',
+      password: '',
+      database: databaseName,
+    },
+    ...knexSnakeCaseMappers(),
   })
+
+  // Attach knex ke Objection
+  Model.knex(knexInstance)
+  console.log(`Connected to database: ${databaseName}`)
+
+  if (CREATE_TABLE === '1') {
+    try {
+      console.log(`Creating tables in: ${databaseName}`)
+      await createSchemaBankSoal(knexInstance)
+      await createSchemaExamResult(knexInstance)
+      await createSchemaQuestions(knexInstance)
+      await createSchemaAnswer(knexInstance)
+    } catch (error) {
+      console.error(`Failed to create schema in ${databaseName}`, error)
+      throw error
+    }
+  }
+
+  return knexInstance
+}
