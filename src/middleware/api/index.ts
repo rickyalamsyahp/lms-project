@@ -33,6 +33,7 @@ const apis: Route[] = [
   { baseUrl: '/guru', path: '/kelas', source: kelas.guruRoute, scopes: 'guru' },
   { baseUrl: '/guru', path: '/jurusan', source: jurusan.guruRoute, scopes: 'guru' },
   { baseUrl: '/guru', path: '/examresult', source: result.ExamResultGuruRoute, scopes: 'guru' },
+  { baseUrl: '/guru', path: '/question', source: question.guruRoute, scopes: 'guru' },
   { baseUrl: '/soal', path: '/banksoal', source: banksoal.BankSoalRoute, scopes: ['guru', 'siswa'] },
   { baseUrl: '/siswa', path: '/kelas', source: kelas.siswaRoute, scopes: 'siswa' },
   { baseUrl: '/siswa', path: '/jurusan', source: jurusan.siswaRoute, scopes: 'siswa' },

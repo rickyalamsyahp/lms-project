@@ -7,3 +7,9 @@ export const siswaRoute = () => {
   router.post('/', ctrl.postExamResult)
   return router
 }
+
+export const guruRoute = () => {
+  const router: Router = Router()
+  router.get('/:id', ctrl.indexId)
+  return router
+}
