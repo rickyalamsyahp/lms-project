@@ -9,6 +9,7 @@ export const index = wrapAsync(async (req: any, res: any) => {
 
     // Build query with filters
     let query = ExamResult.query()
+      .withGraphFetched('student')
       .withGraphFetched('questionBank')
       .withGraphFetched('questionBank.teacher')
       .withGraphFetched('questionBank.subject')

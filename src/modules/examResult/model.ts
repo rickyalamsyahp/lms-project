@@ -35,7 +35,7 @@ export default class ExamResult extends objectionVisibility(Model) {
       student: {
         relation: Model.BelongsToOneRelation,
         modelClass: Student,
-        join: { from: 'exam_results.studentNis', to: 'students.nis' },
+        join: { from: 'exam_results.studentId', to: 'siswa.nis' },
       },
       questionBank: {
         relation: Model.BelongsToOneRelation,
