@@ -22,19 +22,22 @@ const calculateScore = async (examId: string, studentId: string, studentAnswers:
     let correctAnswersCount = 0
 
     questions.forEach((question) => {
-      const correctAnswer = question.correctAnswer
-      const studentAnswer = studentAnswers[question.id] // Get student's answer
+      const studentAnswer = studentAnswers[question.id] // Get student's answer (true/false from frontend)
 
-      if (studentAnswer === correctAnswer) {
+      // Convert boolean to number: true = 1 (correct), false = 0 (incorrect)
+      const studentAnswerValue = studentAnswer
+
+      if (studentAnswerValue === 1) {
         correctAnswersCount++
       }
     })
 
     const totalQuestions = questions.length
-    const score = (correctAnswersCount / totalQuestions) * 100
+    const score = totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0
 
     return parseFloat(score.toFixed(2)) // Ensure score is a valid number
   } catch (error) {
+    console.error('Error calculating score:', error)
     throw new Error('Error calculating score')
   }
 }
@@ -50,9 +53,10 @@ export const postExamResult = wrapAsync(async (req: any, res: Response) => {
   try {
     // Calculate the score based on the answers
     const score = await calculateScore(examId, studentId, answers, req.knex)
+
     const questionId = uuidv4()
     // Insert the exam result into the database (without 'id' field)
-    await ExamResult.query(req.knex).insert({
+    const res = await ExamResult.query(req.knex).insert({
       id: questionId,
       studentId: studentId,
       questionBankId: examId,
@@ -60,7 +64,7 @@ export const postExamResult = wrapAsync(async (req: any, res: Response) => {
       createdBy: 'system', // Or use the actual user if applicable
       modifiedBy: 'system', // Or use the actual user if applicable
     })
-
+    console.log(res)
     // Send a response back to the client
     return { message: 'Exam result submitted successfully.' }
   } catch (error) {

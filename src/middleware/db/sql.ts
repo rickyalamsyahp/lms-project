@@ -6,6 +6,8 @@ import { createSchemaBankSoal } from '@/modules/bankSoal/model'
 import { createSchemaExamResult } from '@/modules/examResult/model'
 import { createSchemaAnswer } from '@/modules/answer/model'
 import { createSchemaQuestions } from '@/modules/question/model'
+import { createSchemaActivityLog } from '@/modules/activityLog/model'
+import { createSchemaExamAttendance } from '@/modules/examAttendance/model'
 
 // Helper untuk generate nama database dari tahun pelajaran
 const getDbNameFromThnPelajaran = (thn_pelajaran: string): string => {
@@ -23,7 +25,7 @@ export const getDbConnection = async (thn_pelajaran: string) => {
       host: 'localhost',
       port: 3306,
       user: 'root',
-      password: '',
+      password: 'Salsaaksa511',
       database: databaseName,
     },
     ...knexSnakeCaseMappers(),
@@ -40,6 +42,8 @@ export const getDbConnection = async (thn_pelajaran: string) => {
       await createSchemaExamResult(knexInstance)
       await createSchemaQuestions(knexInstance)
       await createSchemaAnswer(knexInstance)
+      await createSchemaActivityLog(knexInstance)
+      await createSchemaExamAttendance(knexInstance)
     } catch (error) {
       console.error(`Failed to create schema in ${databaseName}`, error)
       throw error

@@ -5,6 +5,9 @@ import { Knex } from 'knex'
 export default class Student extends objectionVisibility(Model) {
   static tableName = 'siswa'
 
+  nis: string
+  nama: string
+  kode_kelas: string
   static jsonSchema: JSONSchema = {
     type: 'object',
     required: ['nisn', 'kode_kelas', 'nama'],
