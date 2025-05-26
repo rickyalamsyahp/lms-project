@@ -108,7 +108,7 @@ export const createSchemaExamResult = async (knex: Knex) => {
         table.timestamp('startedAt').nullable()
         table.timestamp('submittedAt').nullable()
         table.integer('duration').nullable()
-        table.json('answers').defaultTo('{}')
+        table.json('answers').defaultTo(null)
         table.json('autoSaveData').nullable()
         table.boolean('reviewFlag').defaultTo(false)
         table.string('reopenedBy').nullable()
