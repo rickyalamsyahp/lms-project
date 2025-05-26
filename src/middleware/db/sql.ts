@@ -23,7 +23,7 @@ export const getDbConnection = async (thn_pelajaran: string) => {
       host: 'localhost',
       port: 3306,
       user: 'root',
-      password: '',
+      password: 'Sm4rt0nline#',
       database: databaseName,
     },
     ...knexSnakeCaseMappers(),
