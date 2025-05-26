@@ -1,8 +1,11 @@
 import wrapAsync from '@/libs/wrapAsync'
-import Question from '../model'
-import ExamResult from '@/modules/examResult/model'
+import Question, { QuestionType } from '../model'
+import ExamResult, { ExamResultStatus } from '@/modules/examResult/model'
 import { v4 as uuidv4 } from 'uuid'
 import { Knex } from 'knex'
+import { transaction, Transaction } from 'objection'
+import QuestionBank from '@/modules/bankSoal/model'
+import ActivityLog, { ActivityType } from '@/modules/activityLog/model'
 
 export const indexId = wrapAsync(async (req: any) => {
   const id = req.params.id
@@ -70,5 +73,135 @@ export const postExamResult = wrapAsync(async (req: any, res: Response) => {
   } catch (error) {
     console.error('Error occurred:', error)
     throw new Error('An error occurred while submitting the exam result.')
+  }
+})
+
+export const submitExam = wrapAsync(async (req: any, res: any) => {
+  const trx: Transaction = await transaction.start(ExamResult.knex())
+
+  try {
+    const { questionBankId, answers, isAutoSubmit = false, duration } = req.body
+    const studentId = req.user.nis
+
+    // Get question bank with questions and their answers
+    const questionBank = await QuestionBank.query(trx).withGraphFetched('questions.answers').findById(questionBankId)
+
+    if (!questionBank) {
+      throw new Error('Question bank not found')
+    }
+
+    let score = 0
+    let totalPoints = 0
+    const questionScores: Record<string, number> = {}
+
+    for (const question of questionBank.questions) {
+      totalPoints += question.points
+
+      const studentAnswer = answers[question.id]
+      if (!studentAnswer) continue
+
+      let earnedPoints = 0
+
+      switch (question.type) {
+        case QuestionType.MULTIPLE_CHOICE:
+        case QuestionType.TRUE_FALSE:
+          // Compare student answer content with correct answer content
+          const isCorrect = studentAnswer === question.correctAnswer
+          earnedPoints = isCorrect ? question.points : 0
+          break
+
+        case QuestionType.COMPLEX_MULTIPLE_CHOICE:
+          // For multiple correct answers, compare content arrays
+          const correctAnswers = question.correctAnswers ? JSON.parse(question.correctAnswers) : []
+          const studentAnswers = Array.isArray(studentAnswer) ? studentAnswer : [studentAnswer]
+
+          // Sort both arrays and compare content
+          const sortedCorrect = [...correctAnswers].sort()
+          const sortedStudent = [...studentAnswers].sort()
+
+          const isComplexCorrect =
+            sortedCorrect.length === sortedStudent.length && sortedCorrect.every((ans: string, index: number) => ans === sortedStudent[index])
+
+          earnedPoints = isComplexCorrect ? question.points : 0
+          break
+
+        case QuestionType.ESSAY:
+          const keywords = question.keywords ? JSON.parse(question.keywords) : []
+          const answerText = studentAnswer.toLowerCase()
+          const matchedKeywords = keywords.filter((keyword: string) => answerText.includes(keyword.toLowerCase()))
+          const matchPercentage = keywords.length > 0 ? matchedKeywords.length / keywords.length : 0
+
+          if (matchPercentage >= 0.8) {
+            earnedPoints = question.points
+          } else if (matchPercentage >= 0.6) {
+            earnedPoints = Math.ceil(question.points * 0.7)
+          } else if (matchPercentage >= 0.4) {
+            earnedPoints = Math.ceil(question.points * 0.5)
+          } else {
+            earnedPoints = 0
+          }
+          break
+      }
+
+      score += earnedPoints
+      questionScores[question.id] = earnedPoints
+    }
+
+    const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0
+
+    const existingResult = await ExamResult.query(trx).findOne({ questionBankId, studentId })
+
+    const resultData = {
+      score,
+      totalPoints,
+      percentage,
+      status: isAutoSubmit ? ExamResultStatus.AUTO_SUBMITTED : ExamResultStatus.SUBMITTED,
+      answers,
+      submittedAt: new Date(),
+      duration,
+      // violations,
+      modifiedAt: new Date(),
+      modifiedBy: req.user.nis,
+    }
+
+    if (existingResult) {
+      await ExamResult.query(trx).findById(existingResult.id).patch(resultData)
+    } else {
+      await ExamResult.query(trx).insert({
+        id: uuidv4(),
+        studentId,
+        questionBankId,
+        createdAt: new Date(),
+        createdBy: req.user.id,
+        ...resultData,
+      })
+    }
+
+    await ActivityLog.query(trx).insert({
+      id: uuidv4(),
+      userId: req.user.nis,
+      userType: 'student',
+      activity: isAutoSubmit ? ActivityType.EXAM_AUTO_SUBMIT : ActivityType.EXAM_SUBMIT,
+      description: `${isAutoSubmit ? 'Auto-submitted' : 'Submitted'} exam: ${questionBank.title}`,
+      metadata: JSON.stringify({ questionBankId, score, percentage, duration }),
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+    })
+
+    await trx.commit()
+
+    return {
+      message: isAutoSubmit ? 'Ujian otomatis tersubmit' : 'Ujian berhasil disubmit',
+      data: {
+        score,
+        totalPoints,
+        percentage,
+        status: resultData.status,
+        questionScores,
+      },
+    }
+  } catch (error) {
+    await trx.rollback()
+    throw error
   }
 })

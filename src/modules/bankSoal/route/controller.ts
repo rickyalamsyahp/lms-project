@@ -226,9 +226,9 @@ export const store = wrapAsync(async (req: EGRequest, res: any) => {
         switch (questionData.type) {
           case QuestionType.MULTIPLE_CHOICE:
           case QuestionType.TRUE_FALSE:
-            const correctIndex = questionData.jawaban?.findIndex((answer) => answer.isCorrect)
-            if (correctIndex !== undefined && correctIndex !== -1) {
-              correctAnswer = String.fromCharCode(97 + correctIndex)
+            const correctAnswerObj = questionData.jawaban?.find((answer) => answer.isCorrect)
+            if (correctAnswerObj) {
+              correctAnswer = correctAnswerObj.text // Store actual answer text
             }
             break
 
@@ -236,7 +236,7 @@ export const store = wrapAsync(async (req: EGRequest, res: any) => {
             correctAnswers = []
             questionData.jawaban?.forEach((answer, index) => {
               if (answer.isCorrect) {
-                correctAnswers!.push(String.fromCharCode(97 + index))
+                correctAnswers!.push(answer.text) // Store actual answer texts
               }
             })
             break

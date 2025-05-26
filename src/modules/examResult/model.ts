@@ -47,7 +47,7 @@ export default class ExamResult extends objectionVisibility(Model) {
       percentage: { type: 'number' },
       status: { type: 'string', enum: Object.values(ExamResultStatus) },
       duration: { type: ['integer', 'null'] },
-      answers: { type: ['string', 'null'] }, // JSON string in DB
+      answers: { type: ['object', 'null'] }, // JSON string in DB
       autoSaveData: { type: ['string', 'null'] }, // JSON string in DB
       reviewFlag: { type: 'boolean' },
       reopenedBy: { type: ['string', 'null'] },
