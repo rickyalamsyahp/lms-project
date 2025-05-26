@@ -7,6 +7,7 @@ import bodyParser from 'body-parser'
 import api from './middleware/api'
 import { BODY_LIMIT, CORS_HEADERS, PORT } from './constant/env'
 import swagger from './middleware/swagger'
+import path from 'path'
 // import path from 'path'
 // import fs from 'fs'
 const app = express()
@@ -29,6 +30,7 @@ app.use(
 // })
 // Gunakan path UNC untuk shared folder
 // app.use('/Replays', express.static(path.resolve('\\\\192.168.10.6\\Replays$\\Videos\\')))
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 app.use(
   bodyParser.json({
     limit: BODY_LIMIT,

@@ -10,6 +10,6 @@ export const siswaRoute = () => {
 
 export const guruRoute = () => {
   const router: Router = Router()
-  router.get('/:id', ctrl.indexId)
+  router.get('/:id', ctrl.getExamQuestions)
   return router
 }

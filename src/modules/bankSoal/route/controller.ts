@@ -8,7 +8,13 @@ import Question, { QuestionType } from '../../question/model'
 import Answer from '../../answer/model'
 import ExamResult, { ExamResultStatus } from '../../examResult/model'
 import ActivityLog, { ActivityType } from '../../activityLog/model'
-
+import { Request, Response } from 'express'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
+import FileMeta from '@/modules/fileMeta/model'
+import { apiError } from '@/libs/apiError'
+// import FileMeta from '../models/FileMeta' // Adjust path as needed
 // Type definitions for better type safety
 interface PaginationParams {
   page?: string | number
@@ -593,46 +599,6 @@ export const destroy = wrapAsync(async (req: EGRequest, res: any) => {
   }
 })
 
-export const getExamQuestions = wrapAsync(async (req: EGRequest, res: any) => {
-  const { id } = req.params
-
-  const questionBank = await QuestionBank.query().withGraphFetched('questions.answers').findById(id)
-
-  if (!questionBank) {
-    throw new Error('Exam not found')
-  }
-
-  if (questionBank.status !== ExamStatus.ACTIVE) {
-    throw new Error('Exam is not active')
-  }
-
-  let questions = questionBank.questions || []
-
-  if (questionBank.randomizeQuestions) {
-    questions = questions.sort(() => Math.random() - 0.5)
-  }
-
-  if (questionBank.randomizeAnswers) {
-    questions = questions.map((question: any) => ({
-      ...question,
-      answers: question.answers?.sort(() => Math.random() - 0.5),
-    }))
-  }
-
-  return {
-    examData: {
-      id: questionBank.id,
-      title: questionBank.title,
-      duration: questionBank.duration,
-      instructions: questionBank.instructions,
-      requireAllAnswers: questionBank.requireAllAnswers,
-      randomizeQuestions: questionBank.randomizeQuestions,
-      randomizeAnswers: questionBank.randomizeAnswers,
-    },
-    questions,
-  }
-})
-
 export const submitExam = wrapAsync(async (req: EGRequest, res: any) => {
   const trx: Transaction = await transaction.start(ExamResult.knex())
 
@@ -750,5 +716,73 @@ export const submitExam = wrapAsync(async (req: EGRequest, res: any) => {
   } catch (error) {
     await trx.rollback()
     throw error
+  }
+})
+export const uploadImageFile = wrapAsync(async (req: EGRequest & { file: any }) => {
+  if (!req.file) throw new apiError('File tidak boleh kosong', 400)
+
+  const { filename, originalname, encoding, mimetype, size } = req.file
+  const result = await FileMeta.query().insertGraph({
+    filename,
+    originalname,
+    encoding,
+    mimetype,
+    size,
+    path: `./uploads/images/${filename}`,
+  })
+
+  return result
+})
+export const uploadAudioFile = wrapAsync(async (req: EGRequest & { file: any }) => {
+  if (!req.file) throw new apiError('File tidak boleh kosong', 400)
+
+  const { filename, originalname, encoding, mimetype, size } = req.file
+  const result = await FileMeta.query().insertGraph({
+    filename,
+    originalname,
+    encoding,
+    mimetype,
+    size,
+    path: `./uploads/audio/${filename}`,
+  })
+
+  return result
+})
+
+export const getFile = wrapAsync(async (req: Request, res: Response) => {
+  const { filename } = req.params
+
+  try {
+    // Get file metadata from database
+    const fileMeta = await FileMeta.query().findOne({ filename })
+
+    if (!fileMeta) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found',
+      })
+    }
+
+    // Check if physical file exists
+    if (!fs.existsSync(fileMeta.path)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Physical file not found',
+      })
+    }
+
+    // Set appropriate headers
+    res.setHeader('Content-Type', fileMeta.mimetype)
+    res.setHeader('Content-Length', fileMeta.size)
+    res.setHeader('Content-Disposition', `inline; filename="${fileMeta.originalname}"`)
+
+    // Stream the file
+    const fileStream = fs.createReadStream(fileMeta.path)
+    fileStream.pipe(res)
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve file',
+    })
   }
 })

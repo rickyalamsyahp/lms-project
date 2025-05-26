@@ -4,7 +4,7 @@ import ExamResult, { ExamResultStatus } from '@/modules/examResult/model'
 import { v4 as uuidv4 } from 'uuid'
 import { Knex } from 'knex'
 import { transaction, Transaction } from 'objection'
-import QuestionBank from '@/modules/bankSoal/model'
+import QuestionBank, { ExamStatus } from '@/modules/bankSoal/model'
 import ActivityLog, { ActivityType } from '@/modules/activityLog/model'
 
 export const indexId = wrapAsync(async (req: any) => {
@@ -15,6 +15,46 @@ export const indexId = wrapAsync(async (req: any) => {
 
   const result = await qb
   return result
+})
+
+export const getExamQuestions = wrapAsync(async (req: any, res: any) => {
+  const { id } = req.params
+
+  const questionBank = await QuestionBank.query().withGraphFetched('questions.answers').findById(id)
+
+  if (!questionBank) {
+    throw new Error('Exam not found')
+  }
+
+  if (questionBank.status !== ExamStatus.ACTIVE) {
+    throw new Error('Exam is not active')
+  }
+
+  let questions = questionBank.questions || []
+
+  if (questionBank.randomizeQuestions) {
+    questions = questions.sort(() => Math.random() - 0.5)
+  }
+
+  if (questionBank.randomizeAnswers) {
+    questions = questions.map((question: any) => ({
+      ...question,
+      answers: question.answers?.sort(() => Math.random() - 0.5),
+    }))
+  }
+
+  return {
+    examData: {
+      id: questionBank.id,
+      title: questionBank.title,
+      duration: questionBank.duration,
+      instructions: questionBank.instructions,
+      requireAllAnswers: questionBank.requireAllAnswers,
+      randomizeQuestions: questionBank.randomizeQuestions,
+      randomizeAnswers: questionBank.randomizeAnswers,
+    },
+    questions,
+  }
 })
 
 // The function to calculate the score and store it in the `exam_results` table

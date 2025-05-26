@@ -8,6 +8,7 @@ import { createSchemaAnswer } from '@/modules/answer/model'
 import { createSchemaQuestions } from '@/modules/question/model'
 import { createSchemaActivityLog } from '@/modules/activityLog/model'
 import { createSchemaExamAttendance } from '@/modules/examAttendance/model'
+import { createSchemaFileMeta } from '@/modules/fileMeta/model'
 
 // Helper untuk generate nama database dari tahun pelajaran
 const getDbNameFromThnPelajaran = (thn_pelajaran: string): string => {
@@ -40,6 +41,7 @@ export const getDbConnection = async (thn_pelajaran: string) => {
       console.log(`Creating tables in: ${databaseName}`)
       await createSchemaBankSoal(knexInstance)
       await createSchemaExamResult(knexInstance)
+      await createSchemaFileMeta(knexInstance)
       await createSchemaQuestions(knexInstance)
       await createSchemaAnswer(knexInstance)
       await createSchemaActivityLog(knexInstance)

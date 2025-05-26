@@ -24,7 +24,7 @@ export default class FileMeta extends objectionVisibility(Model) {
   }
 }
 
-export const createSchema = async (knex: Knex) => {
+export const createSchemaFileMeta = async (knex: Knex) => {
   try {
     if (!(await knex.schema.hasTable(FileMeta.tableName))) {
       console.log(`Create table ${FileMeta.tableName}`)
